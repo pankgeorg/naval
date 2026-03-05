@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class FuelConsumptionBase(BaseModel):
@@ -90,6 +90,17 @@ class VoyageBase(BaseModel):
     cargo_type: str | None = None
     cargo_tonnes: float | None = None
     notes: str | None = None
+
+    @field_validator("departure_date", "arrival_date", mode="before")
+    @classmethod
+    def strip_timezone(cls, v: datetime | str | None) -> datetime | None:
+        if v is None:
+            return None
+        if isinstance(v, str):
+            v = datetime.fromisoformat(v.replace("Z", "+00:00"))
+        if v.tzinfo is not None:
+            v = v.replace(tzinfo=None)
+        return v
 
 
 class VoyageCreate(VoyageBase):

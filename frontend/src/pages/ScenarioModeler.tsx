@@ -20,7 +20,7 @@ interface ScenarioMeta {
 export default function ScenarioModeler() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation(['compliance', 'scenario', 'common']);
-  const [year, setYear] = useState(2025);
+  const [year, setYear] = useState(2026);
   const [speedChange, setSpeedChange] = useState(0);
   const [euaPrice, setEuaPrice] = useState(75);
   const [fuelMix, setFuelMix] = useState<Record<string, number>>({ vlsfo: 100 });
