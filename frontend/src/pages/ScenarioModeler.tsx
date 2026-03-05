@@ -76,6 +76,36 @@ export default function ScenarioModeler() {
       ? formatCurrency((data?.eu_ets?.cost_eur as number) || 0)
       : '—';
 
+  // Percentage change helpers
+  const ciiOrder: Record<string, number> = { A: 1, B: 2, C: 3, D: 4, E: 5 };
+  const pctChange = (base: number, val: number) =>
+    base !== 0 ? ((val - base) / Math.abs(base)) * 100 : 0;
+
+  const trendFor = (pct: number, lowerIsBetter: boolean): 'up' | 'down' | 'neutral' => {
+    if (Math.abs(pct) < 0.01) return 'neutral';
+    const improved = lowerIsBetter ? pct < 0 : pct > 0;
+    return improved ? 'down' : 'up';
+  };
+
+  const colorFor = (trend: 'up' | 'down' | 'neutral'): 'green' | 'red' | undefined =>
+    trend === 'down' ? 'green' : trend === 'up' ? 'red' : undefined;
+
+  const baseCii = (baseline?.cii?.rating as string) || '';
+  const scenCii = (scenario?.cii?.rating as string) || '';
+  const ciiDiff = ciiOrder[baseCii] !== undefined && ciiOrder[scenCii] !== undefined
+    ? ciiOrder[baseCii] - ciiOrder[scenCii] : 0;
+  const ciiTrend: 'up' | 'down' | 'neutral' = ciiDiff > 0 ? 'down' : ciiDiff < 0 ? 'up' : 'neutral';
+
+  const baseFueleu = (baseline?.fueleu?.weighted_intensity as number) || 0;
+  const scenFueleu = (scenario?.fueleu?.weighted_intensity as number) || 0;
+  const fueleuPct = pctChange(baseFueleu, scenFueleu);
+  const fueleuTrend = trendFor(fueleuPct, true);
+
+  const baseEts = (baseline?.eu_ets?.cost_eur as number) || 0;
+  const scenEts = (scenario?.eu_ets?.cost_eur as number) || 0;
+  const etsPct = pctChange(baseEts, scenEts);
+  const etsTrend = trendFor(etsPct, true);
+
   return (
     <div>
       <Breadcrumbs items={[
@@ -154,9 +184,28 @@ export default function ScenarioModeler() {
                 <div>
                   <h3 className="font-semibold text-maritime-600 text-sm mb-3">{t('scenario:scenario')}</h3>
                   <div className="space-y-3">
-                    <MetricCard title={t('compliance:scenario.ciiRating')} value={(scenario.cii?.rating as string) || '—'} />
-                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={fueleuValue(scenario)} subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined} />
-                    <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(scenario)} />
+                    <MetricCard
+                      title={t('compliance:scenario.ciiRating')}
+                      value={(scenario.cii?.rating as string) || '—'}
+                      valueColor={colorFor(ciiTrend)}
+                      trend={ciiDiff !== 0 ? ciiTrend : undefined}
+                      trendValue={ciiDiff !== 0 ? `${Math.abs(ciiDiff)} grade${Math.abs(ciiDiff) > 1 ? 's' : ''}` : undefined}
+                    />
+                    <MetricCard
+                      title={t('compliance:scenario.fueleuIntensity')}
+                      value={fueleuValue(scenario)}
+                      subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined}
+                      valueColor={hasEuCoverage && hasFuel ? colorFor(fueleuTrend) : undefined}
+                      trend={hasEuCoverage && hasFuel && Math.abs(fueleuPct) >= 0.01 ? fueleuTrend : undefined}
+                      trendValue={hasEuCoverage && hasFuel && Math.abs(fueleuPct) >= 0.01 ? `${Math.abs(fueleuPct).toFixed(1)}%` : undefined}
+                    />
+                    <MetricCard
+                      title={t('compliance:scenario.etsCost')}
+                      value={etsValue(scenario)}
+                      valueColor={hasEuCoverage && hasFuel ? colorFor(etsTrend) : undefined}
+                      trend={hasEuCoverage && hasFuel && Math.abs(etsPct) >= 0.01 ? etsTrend : undefined}
+                      trendValue={hasEuCoverage && hasFuel && Math.abs(etsPct) >= 0.01 ? `${Math.abs(etsPct).toFixed(1)}%` : undefined}
+                    />
                   </div>
                 </div>
               </div>
