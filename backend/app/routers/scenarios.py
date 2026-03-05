@@ -60,4 +60,28 @@ async def run_what_if(
         "eu_ets_cost_delta_eur": round(scenario.eu_ets.cost_eur - baseline.eu_ets.cost_eur, 2),
     }
 
-    return {"baseline": baseline_dict, "scenario": scenario_dict, "delta": delta}
+    # Include coverage metadata so the frontend can show appropriate warnings
+    total_legs = sum(len(v.get("legs", [])) for v in voyages_data)
+    eu_covered_legs = sum(
+        1 for v in voyages_data
+        for leg in v.get("legs", [])
+        if (leg.get("fueleu_coverage", 0) or 0) > 0
+    )
+    has_fuel = any(
+        len(leg.get("fuel_records", [])) > 0
+        for v in voyages_data for leg in v.get("legs", [])
+    )
+
+    meta = {
+        "total_voyages": len(voyages_data),
+        "total_legs": total_legs,
+        "eu_covered_legs": eu_covered_legs,
+        "has_fuel_data": has_fuel,
+    }
+
+    return {
+        "baseline": baseline_dict,
+        "scenario": scenario_dict,
+        "delta": delta,
+        "meta": meta,
+    }

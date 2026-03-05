@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Water waves -->
+  <path d="M2 46 Q10 42 18 46 Q26 50 34 46 Q42 42 50 46 Q58 50 62 46" fill="none" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/>
+  <path d="M2 52 Q10 48 18 52 Q26 56 34 52 Q42 48 50 52 Q58 56 62 52" fill="none" stroke="#0e7490" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <!-- Hull -->
+  <path d="M8 44 L14 44 L16 38 L48 38 L50 44 L56 44 L52 32 L12 32 Z" fill="#0e7490"/>
+  <!-- Cabin/superstructure -->
+  <rect x="20" y="24" width="20" height="8" rx="1" fill="#155e75"/>
+  <!-- Smokestack -->
+  <rect x="36" y="16" width="6" height="8" rx="1" fill="#164e63"/>
+  <!-- Smoke -->
+  <circle cx="39" cy="13" r="2.5" fill="#94a3b8" opacity="0.6"/>
+  <circle cx="42" cy="10" r="2" fill="#94a3b8" opacity="0.4"/>
+  <!-- Mast -->
+  <line x1="24" y1="12" x2="24" y2="24" stroke="#164e63" stroke-width="2" stroke-linecap="round"/>
+  <!-- Flag -->
+  <path d="M24 12 L34 15 L24 18 Z" fill="#0891b2"/>
+  <!-- Porthole -->
+  <circle cx="30" cy="35" r="2" fill="#cffafe" stroke="#155e75" stroke-width="0.8"/>
+  <circle cx="38" cy="35" r="2" fill="#cffafe" stroke="#155e75" stroke-width="0.8"/>
+</svg>

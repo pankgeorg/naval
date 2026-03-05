@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, Info } from 'lucide-react';
 import { runScenario } from '../api/calculations';
 import { getShip } from '../api/ships';
 import SpeedSlider from '../components/scenarios/SpeedSlider';
@@ -8,6 +9,13 @@ import FuelMixSlider from '../components/scenarios/FuelMixSlider';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { formatNumber, formatCurrency } from '../utils/formatters';
+
+interface ScenarioMeta {
+  total_voyages: number;
+  total_legs: number;
+  eu_covered_legs: number;
+  has_fuel_data: boolean;
+}
 
 export default function ScenarioModeler() {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +60,21 @@ export default function ScenarioModeler() {
   const baseline = result?.baseline as Record<string, Record<string, unknown>> | undefined;
   const scenario = result?.scenario as Record<string, Record<string, unknown>> | undefined;
   const delta = result?.delta as Record<string, unknown> | undefined;
+  const meta = result?.meta as ScenarioMeta | undefined;
+
+  const hasEuCoverage = meta ? meta.eu_covered_legs > 0 : true;
+  const hasVoyages = meta ? meta.total_voyages > 0 : true;
+  const hasFuel = meta ? meta.has_fuel_data : true;
+
+  const fueleuValue = (data: Record<string, Record<string, unknown>> | undefined) =>
+    hasEuCoverage && hasFuel
+      ? formatNumber((data?.fueleu?.weighted_intensity as number) || 0)
+      : '—';
+
+  const etsValue = (data: Record<string, Record<string, unknown>> | undefined) =>
+    hasEuCoverage && hasFuel
+      ? formatCurrency((data?.eu_ets?.cost_eur as number) || 0)
+      : '—';
 
   return (
     <div>
@@ -99,21 +122,41 @@ export default function ScenarioModeler() {
           {loading && <div className="text-center py-12 text-gray-400">{t('scenario:computing')}</div>}
           {!loading && baseline && scenario && (
             <div className="space-y-6">
+              {/* Warnings */}
+              {!hasVoyages && (
+                <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <p className="text-sm text-amber-700">{t('scenario:noVoyages')}</p>
+                </div>
+              )}
+              {hasVoyages && !hasFuel && (
+                <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                  <p className="text-sm text-amber-700">{t('scenario:noFuelData')}</p>
+                </div>
+              )}
+              {hasVoyages && hasFuel && !hasEuCoverage && (
+                <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                  <p className="text-sm text-blue-700">{t('scenario:noEuCoverage')}</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-gray-500 text-sm mb-3">{t('scenario:baseline')}</h3>
                   <div className="space-y-3">
                     <MetricCard title={t('compliance:scenario.ciiRating')} value={(baseline.cii?.rating as string) || '—'} tooltip={t('compliance:scenario.ciiRatingTooltip')} />
-                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={formatNumber((baseline.fueleu?.weighted_intensity as number) || 0)} subtitle="gCO₂eq/MJ" tooltip={t('compliance:scenario.fueleuIntensityTooltip')} />
-                    <MetricCard title={t('compliance:scenario.etsCost')} value={formatCurrency((baseline.eu_ets?.cost_eur as number) || 0)} tooltip={t('compliance:scenario.etsCostTooltip')} />
+                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={fueleuValue(baseline)} subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined} tooltip={t('compliance:scenario.fueleuIntensityTooltip')} />
+                    <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(baseline)} tooltip={t('compliance:scenario.etsCostTooltip')} />
                   </div>
                 </div>
                 <div>
                   <h3 className="font-semibold text-maritime-600 text-sm mb-3">{t('scenario:scenario')}</h3>
                   <div className="space-y-3">
                     <MetricCard title={t('compliance:scenario.ciiRating')} value={(scenario.cii?.rating as string) || '—'} />
-                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={formatNumber((scenario.fueleu?.weighted_intensity as number) || 0)} subtitle="gCO₂eq/MJ" />
-                    <MetricCard title={t('compliance:scenario.etsCost')} value={formatCurrency((scenario.eu_ets?.cost_eur as number) || 0)} />
+                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={fueleuValue(scenario)} subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined} />
+                    <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(scenario)} />
                   </div>
                 </div>
               </div>
@@ -121,8 +164,8 @@ export default function ScenarioModeler() {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-semibold text-sm mb-2">{t('scenario:delta')}</h3>
                   <p className="text-sm">{t('scenario:ciiRatingChange')}: {delta.cii_rating_change as string}</p>
-                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {formatNumber((delta.fueleu_balance_delta_mj as number) || 0)} MJ</p>
-                  <p className="text-sm">{t('scenario:etsCostDelta')}: {formatCurrency((delta.eu_ets_cost_delta_eur as number) || 0)}</p>
+                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {hasEuCoverage && hasFuel ? `${formatNumber((delta.fueleu_balance_delta_mj as number) || 0)} MJ` : '—'}</p>
+                  <p className="text-sm">{t('scenario:etsCostDelta')}: {hasEuCoverage && hasFuel ? formatCurrency((delta.eu_ets_cost_delta_eur as number) || 0) : '—'}</p>
                 </div>
               )}
             </div>

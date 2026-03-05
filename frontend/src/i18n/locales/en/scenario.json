@@ -10,5 +10,8 @@
   "etsCostDelta": "ETS Cost",
   "computing": "Computing...",
   "adjustPrompt": "Adjust parameters to see scenario comparison.",
-  "requiresVoyageData": "Note: Requires voyage data for the selected year."
+  "requiresVoyageData": "Note: Requires voyage data for the selected year.",
+  "noVoyages": "No voyages found for the selected year. Create a voyage first to run scenarios.",
+  "noFuelData": "Voyages exist but have no fuel consumption data. Add fuel entries to your voyage legs to see CII, FuelEU, and ETS results.",
+  "noEuCoverage": "None of your voyages involve EU/EEA ports, so FuelEU Maritime and EU ETS do not apply. These regulations only cover voyages to, from, or between EU/EEA ports. CII is still calculated globally."
 }
