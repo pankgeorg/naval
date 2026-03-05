@@ -1,0 +1,6 @@
+{
+  "title": "Annual Compliance Report",
+  "reportWithYear": "Annual Compliance Report — {{year}}",
+  "reportBreadcrumb": "Report {{year}}",
+  "loadingReport": "Loading report..."
+}

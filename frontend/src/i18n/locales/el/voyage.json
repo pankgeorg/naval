@@ -1,0 +1,31 @@
+{
+  "createTitle": "Δημιουργία Ταξιδίου",
+  "detailTitle": "Ταξίδι {{number}}",
+  "status": "Κατάσταση",
+  "totalDistance": "Συνολική Απόσταση",
+  "portCalls": "Προσεγγίσεις",
+  "legs": "Σκέλη",
+  "steps": {
+    "portCalls": "Προσεγγίσεις",
+    "mapRoutes": "Χάρτης & Δρομολόγια",
+    "fuelEntry": "Καταχώριση Καυσίμου",
+    "review": "Επισκόπηση"
+  },
+  "summary": "Σύνοψη",
+  "saveVoyage": "Αποθήκευση Ταξιδίου",
+  "addPortCallsFirst": "Προσθέστε τουλάχιστον 2 προσεγγίσεις πρώτα.",
+  "table": {
+    "voyage": "Ταξίδι",
+    "status": "Κατάσταση",
+    "portCalls": "Προσεγγίσεις",
+    "legs": "Σκέλη",
+    "distance": "Απόσταση (nm)",
+    "created": "Δημιουργήθηκε",
+    "leg": "Σκέλος",
+    "type": "Τύπος",
+    "etsCoverage": "Κάλυψη ETS",
+    "fueleuCoverage": "Κάλυψη FuelEU"
+  },
+  "empty": "Δεν υπάρχουν ταξίδια ακόμα.",
+  "createLink": "Δημιουργήστε ένα ταξίδι"
+}

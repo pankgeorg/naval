@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-maritime-50: #f0f7ff;
+  --color-maritime-100: #e0efff;
+  --color-maritime-200: #b9dfff;
+  --color-maritime-300: #7cc4ff;
+  --color-maritime-400: #36a5ff;
+  --color-maritime-500: #0c87f2;
+  --color-maritime-600: #006acf;
+  --color-maritime-700: #0054a8;
+  --color-maritime-800: #04478a;
+  --color-maritime-900: #0a3c72;
+  --color-maritime-950: #07264b;
+}
+
+body {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
+}

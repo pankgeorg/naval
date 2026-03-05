@@ -1,0 +1,14 @@
+{
+  "title": "Scenario Modeler",
+  "year": "Year",
+  "euaPrice": "EUA Price (EUR)",
+  "baseline": "Baseline",
+  "scenario": "Scenario",
+  "delta": "Delta",
+  "ciiRatingChange": "CII",
+  "fueleuBalanceDelta": "FuelEU Balance",
+  "etsCostDelta": "ETS Cost",
+  "computing": "Computing...",
+  "adjustPrompt": "Adjust parameters to see scenario comparison.",
+  "requiresVoyageData": "Note: Requires voyage data for the selected year."
+}

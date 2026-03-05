@@ -1,0 +1,33 @@
+{
+  "appTitle": "Maritime Compliance",
+  "nav": {
+    "fleet": "Fleet",
+    "login": "Login"
+  },
+  "auth": {
+    "logout": "Logout",
+    "anonymousMode": "Anonymous Mode"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "print": "Print / PDF",
+    "previous": "Previous",
+    "next": "Next",
+    "addEngine": "Add Engine",
+    "newVoyage": "+ New Voyage",
+    "newShip": "Add Ship"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "completed": "completed",
+    "inProgress": "in_progress",
+    "planned": "planned"
+  },
+  "yes": "Yes",
+  "no": "No"
+}

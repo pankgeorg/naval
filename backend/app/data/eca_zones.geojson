@@ -1,0 +1,37 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"name": "Baltic Sea SOx ECA", "eca_type": "sox"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[10.0, 53.5], [10.0, 66.0], [30.0, 66.0], [30.0, 53.5], [10.0, 53.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "North Sea SOx ECA", "eca_type": "sox"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-5.0, 48.5], [-5.0, 62.0], [10.0, 62.0], [10.0, 48.5], [-5.0, 48.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "North American ECA", "eca_type": "sox_nox"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-170.0, 25.0], [-170.0, 60.0], [-50.0, 60.0], [-50.0, 25.0], [-170.0, 25.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "US Caribbean ECA", "eca_type": "sox_nox"},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-92.0, 17.0], [-92.0, 27.0], [-74.0, 27.0], [-74.0, 17.0], [-92.0, 17.0]]]
+      }
+    }
+  ]
+}

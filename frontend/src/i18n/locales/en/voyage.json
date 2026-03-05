@@ -1,0 +1,31 @@
+{
+  "createTitle": "Create Voyage",
+  "detailTitle": "Voyage {{number}}",
+  "status": "Status",
+  "totalDistance": "Total Distance",
+  "portCalls": "Port Calls",
+  "legs": "Legs",
+  "steps": {
+    "portCalls": "Port Calls",
+    "mapRoutes": "Map & Routes",
+    "fuelEntry": "Fuel Entry",
+    "review": "Review"
+  },
+  "summary": "Summary",
+  "saveVoyage": "Save Voyage",
+  "addPortCallsFirst": "Add at least 2 port calls first.",
+  "table": {
+    "voyage": "Voyage",
+    "status": "Status",
+    "portCalls": "Port Calls",
+    "legs": "Legs",
+    "distance": "Distance (nm)",
+    "created": "Created",
+    "leg": "Leg",
+    "type": "Type",
+    "etsCoverage": "ETS Coverage",
+    "fueleuCoverage": "FuelEU Coverage"
+  },
+  "empty": "No voyages yet.",
+  "createLink": "Create a voyage"
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Μοντελοποίηση Σεναρίων",
+  "year": "Έτος",
+  "euaPrice": "Τιμή EUA (EUR)",
+  "baseline": "Βάση",
+  "scenario": "Σενάριο",
+  "delta": "Διαφορά",
+  "ciiRatingChange": "CII",
+  "fueleuBalanceDelta": "Ισοζύγιο FuelEU",
+  "etsCostDelta": "Κόστος ETS",
+  "computing": "Υπολογισμός...",
+  "adjustPrompt": "Ρυθμίστε τις παραμέτρους για σύγκριση σεναρίων.",
+  "requiresVoyageData": "Σημείωση: Απαιτούνται δεδομένα ταξιδίου για το επιλεγμένο έτος."
+}

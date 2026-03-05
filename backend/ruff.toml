@@ -1,0 +1,13 @@
+line-length = 100
+
+[lint]
+select = ["E", "F", "W"]
+ignore = ["F821"]  # SQLAlchemy uses string-quoted forward references
+
+[lint.per-file-ignores]
+"app/models/*.py" = ["F821"]
+"app/main.py" = ["F401"]
+"alembic/env.py" = ["F401"]
+"app/seed/reference_tables.py" = ["E501"]
+"app/calculators/constants.py" = ["E501"]
+"app/data/*" = ["E501"]

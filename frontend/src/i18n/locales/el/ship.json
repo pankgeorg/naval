@@ -1,0 +1,35 @@
+{
+  "addTitle": "Προσθήκη Νέου Πλοίου",
+  "editTitle": "Επεξεργασία Πλοίου",
+  "saveShip": "Αποθήκευση Πλοίου",
+  "identification": "Ταυτοποίηση",
+  "dimensionsDesign": "Διαστάσεις & Σχεδίαση",
+  "engines": "Μηχανές",
+  "fields": {
+    "imoNumber": "Αριθμός IMO",
+    "shipName": "Όνομα Πλοίου",
+    "flagState": "Σημαία",
+    "shipType": "Τύπος Πλοίου",
+    "dwt": "DWT",
+    "gt": "GT",
+    "grossTonnage": "Ολική Χωρητικότητα",
+    "buildDate": "Ημ/νία Κατασκευής",
+    "referenceSpeed": "Ταχύτητα Αναφοράς",
+    "designDraught": "Βύθισμα Σχεδίασης",
+    "weatherFactor": "Συντελεστής Καιρού (fw)"
+  },
+  "engine": {
+    "role": "Ρόλος",
+    "designation": "Ονομασία",
+    "mcr": "MCR (kW)",
+    "sfc": "SFC (g/kWh)",
+    "primaryFuelType": "Κύριος Τύπος Καυσίμου",
+    "main": "Κύρια",
+    "auxiliary": "Βοηθητική"
+  },
+  "fleet": {
+    "title": "Πίνακας Στόλου",
+    "empty": "Δεν υπάρχουν πλοία ακόμα. Προσθέστε το πρώτο σας σκάφος.",
+    "addShip": "Προσθήκη Πλοίου"
+  }
+}

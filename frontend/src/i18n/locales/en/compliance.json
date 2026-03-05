@@ -1,0 +1,102 @@
+{
+  "eedi": {
+    "title": "EEDI/EEXI",
+    "attained": "Attained EEDI",
+    "required": "Required EEDI",
+    "referenceLine": "Reference Line",
+    "phase": "Phase",
+    "compliant": "Compliant",
+    "gap": "Gap",
+    "tooltip": "The Energy Efficiency Design Index (EEDI) measures a ship's CO₂ emissions per unit of transport work (gCO₂/t·nm). Calculated from engine power, fuel type, and design speed, it must not exceed a reference line that tightens in phases (Phase 0→3). A lower EEDI means a more efficient design.",
+    "attainedTooltip": "Your ship's calculated EEDI value based on engine configuration, SFC, and design speed at 75% MCR. Formula: Σ(CF × SFC × P) / (fw × Vref × Capacity).",
+    "requiredTooltip": "The maximum allowed EEDI for this ship type and size, based on the IMO reference line reduced by the applicable phase reduction factor.",
+    "referenceLineTooltip": "The baseline efficiency curve defined by IMO (MARPOL Annex VI Reg. 21). Calculated as a × DWT^(-c) where a and c are ship-type specific constants.",
+    "phaseTooltip": "IMO phases tighten EEDI requirements over time. Phase 0 is the baseline; Phase 3 (from 2025+) requires up to 30–50% reduction depending on ship type.",
+    "compliantTooltip": "Whether the attained EEDI is below the required EEDI for the applicable phase. Non-compliance means the ship does not meet minimum design efficiency standards.",
+    "gapTooltip": "The percentage difference between attained and required EEDI. Negative means the ship is better than required; positive means it exceeds the limit."
+  },
+  "eexi": {
+    "title": "EEXI",
+    "tooltip": "The Energy Efficiency Existing Ship Index (EEXI) applies the same formula as EEDI but to existing ships. All ships had to demonstrate EEXI compliance by the first annual survey in 2023. Common compliance methods include Engine Power Limitation (EPL)."
+  },
+  "cii": {
+    "title": "CII",
+    "attainedAer": "Attained AER",
+    "requiredCii": "Required CII",
+    "totalCo2": "Total CO₂",
+    "totalDistance": "Total Distance",
+    "rating": "CII Rating",
+    "ratingWithYear": "CII Rating ({{year}})",
+    "tooltip": "The Carbon Intensity Indicator (CII) measures operational efficiency as Annual Efficiency Ratio (AER) = total CO₂ / (DWT × distance). Ships are rated A (best) to E (worst) against a required CII that tightens ~2% per year. Ships rated D for 3 consecutive years or E in any year must submit a corrective action plan.",
+    "attainedAerTooltip": "Your ship's actual operational carbon intensity: total gCO₂ emitted divided by (capacity × total distance sailed). Lower is better.",
+    "requiredCiiTooltip": "The CII threshold for a C rating, calculated from the reference line × (1 - Z%), where Z% is the annual reduction factor (e.g. 9% in 2025, increasing ~2%/year).",
+    "totalCo2Tooltip": "Total CO₂ emissions for the year, calculated from fuel consumption × fuel-specific emission factors (CF). Includes all voyage legs.",
+    "totalDistanceTooltip": "Sum of all voyage leg distances sailed during the year, in nautical miles.",
+    "ratingTooltip": "The A–E rating is determined by comparing attained AER to band boundaries (d1–d4 × required CII). Boundary vectors are ship-type specific per MEPC.339(76)."
+  },
+  "fueleu": {
+    "title": "FuelEU Maritime",
+    "ghgIntensity": "GHG Intensity",
+    "target": "Target",
+    "complianceBalance": "Compliance Balance",
+    "compliant": "Compliant",
+    "penalty": "Penalty Estimate",
+    "tooltip": "FuelEU Maritime (Regulation 2023/1805) limits the Well-to-Wake GHG intensity of energy used onboard. The baseline is 91.16 gCO₂eq/MJ, with reductions of 2% from 2025 escalating to 80% by 2050. It covers CO₂, CH₄, and N₂O across the full fuel lifecycle. Intra-EU voyages are 100% covered; extra-EU voyages 50%.",
+    "ghgIntensityTooltip": "The weighted Well-to-Wake (WtW) GHG intensity of all fuels consumed, in gCO₂eq/MJ. Includes upstream (Well-to-Tank) and combustion (Tank-to-Wake) emissions of CO₂, CH₄, and N₂O.",
+    "targetTooltip": "The maximum allowed GHG intensity for the reporting year. Derived from the 91.16 gCO₂eq/MJ reference reduced by the year's target percentage (e.g. -2% in 2025 = 89.34 gCO₂eq/MJ).",
+    "complianceBalanceTooltip": "Energy surplus or deficit in MJ. Positive means you are below the target (compliant with a banking surplus); negative means you exceed it and face penalties or must borrow from future years.",
+    "compliantTooltip": "Whether the ship's weighted GHG intensity is at or below the year's target. Non-compliance triggers a penalty based on the deficit multiplied by a VLSFO-equivalent cost factor.",
+    "penaltyTooltip": "Estimated financial penalty for non-compliance, calculated from the compliance balance deficit. The penalty is designed to be higher than the cost of using compliant fuels."
+  },
+  "euets": {
+    "title": "EU ETS",
+    "coveredCo2": "Covered CO₂",
+    "euasRequired": "EUAs Required",
+    "euaPrice": "EUA Price",
+    "totalCost": "Total Cost",
+    "phaseIn": "Phase-in",
+    "ghgScope": "GHG Scope",
+    "tooltip": "The EU Emissions Trading System (Directive 2003/87/EC) requires ships to surrender EU Allowances (EUAs) for their CO₂ emissions on voyages to/from/within EU ports. Phase-in: 40% of emissions in 2024, 70% in 2025, 100% from 2026. From 2026, CH₄ and N₂O are also included (CO₂eq scope).",
+    "coveredCo2Tooltip": "Total CO₂ emissions subject to EU ETS, after applying coverage rules: 100% for intra-EU voyages, 50% for voyages between EU and non-EU ports, 0% for non-EU voyages.",
+    "euasRequiredTooltip": "Number of EU Allowances to surrender = covered CO₂ × phase-in percentage. Each EUA represents 1 tonne of CO₂eq.",
+    "euaPriceTooltip": "Current market price per EU Allowance (€/tCO₂). The default is €75 but this fluctuates on the EU carbon market. Adjustable in the scenario modeler.",
+    "totalCostTooltip": "Total ETS compliance cost = EUAs required × EUA price. This is a direct operational cost that impacts voyage economics.",
+    "phaseInTooltip": "The percentage of emissions that must be covered by EUAs: 40% in 2024, 70% in 2025, 100% from 2026 onward.",
+    "ghgScopeTooltip": "Which greenhouse gases are counted. Until 2025: CO₂ only. From 2026: CO₂ + CH₄ + N₂O (expressed as CO₂-equivalents), significantly increasing covered emissions for LNG-fuelled ships."
+  },
+  "scenario": {
+    "title": "Scenario Modeler",
+    "baseline": "Baseline",
+    "scenarioResult": "Scenario",
+    "delta": "Delta",
+    "ciiRating": "CII Rating",
+    "fueleuIntensity": "FuelEU Intensity",
+    "etsCost": "EU ETS Cost",
+    "year": "Year",
+    "euaPrice": "EUA Price (EUR)",
+    "computing": "Computing...",
+    "adjustPrompt": "Adjust parameters to see scenario comparison.",
+    "requiresVoyageData": "Note: Requires voyage data for the selected year.",
+    "ciiRatingTooltip": "The projected CII rating under this scenario. Speed reduction follows a cubic relationship (fuel ∝ speed³), so even small speed reductions can significantly improve the rating.",
+    "fueleuIntensityTooltip": "The projected WtW GHG intensity. Switching to low-carbon fuels (bio-methanol, e-methanol, green NH₃) can dramatically reduce this value. RFNBOs get a 2× energy credit until 2033.",
+    "etsCostTooltip": "The projected EU ETS cost. Affected by both emission levels (speed, fuel mix) and EUA price assumptions. Speed reduction reduces fuel consumption and thus emissions.",
+    "deltaTooltip": "The difference between baseline and scenario results, showing the financial and environmental impact of proposed operational changes."
+  },
+  "projection": {
+    "title": "Compliance Projection",
+    "assumptions": "Assumptions",
+    "constantOps": "Constant Operations",
+    "improving2pct": "2% Annual Improvement",
+    "loadingProjection": "Loading projection..."
+  },
+  "report": {
+    "title": "Annual Compliance Report",
+    "reportWithYear": "Annual Compliance Report — {{year}}",
+    "reportYear": "Report {{year}}",
+    "eediSection": "EEDI",
+    "ciiSection": "CII",
+    "fueleuSection": "FuelEU Maritime",
+    "euetsSection": "EU ETS",
+    "co2Emissions": "CO₂ Emissions"
+  }
+}

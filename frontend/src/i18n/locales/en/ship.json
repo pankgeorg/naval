@@ -1,0 +1,35 @@
+{
+  "addTitle": "Add New Ship",
+  "editTitle": "Edit Ship",
+  "saveShip": "Save Ship",
+  "identification": "Identification",
+  "dimensionsDesign": "Dimensions & Design",
+  "engines": "Engines",
+  "fields": {
+    "imoNumber": "IMO Number",
+    "shipName": "Ship Name",
+    "flagState": "Flag State",
+    "shipType": "Ship Type",
+    "dwt": "DWT",
+    "gt": "GT",
+    "grossTonnage": "Gross Tonnage",
+    "buildDate": "Build Date",
+    "referenceSpeed": "Reference Speed",
+    "designDraught": "Design Draught",
+    "weatherFactor": "Weather Factor (fw)"
+  },
+  "engine": {
+    "role": "Role",
+    "designation": "Designation",
+    "mcr": "MCR (kW)",
+    "sfc": "SFC (g/kWh)",
+    "primaryFuelType": "Primary Fuel Type",
+    "main": "Main",
+    "auxiliary": "Auxiliary"
+  },
+  "fleet": {
+    "title": "Fleet Dashboard",
+    "empty": "No ships yet. Add your first vessel to get started.",
+    "addShip": "Add Ship"
+  }
+}

@@ -1,0 +1,74 @@
+# ── Environment & secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Python / Backend ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv / virtualenv
+backend/.venv/
+.venv/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ruff
+.ruff_cache/
+
+# mypy
+.mypy_cache/
+
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+
+# Vite build output
+frontend/dist/
+frontend/.vite/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# Keep docker-compose files but ignore local override
+docker-compose.override.yml
+
+# ── Database ──────────────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+
+# Alembic (keep migrations, ignore generated env artifacts)
+backend/alembic/versions/__pycache__/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Logs & temp ───────────────────────────────────────────────────────────────
+*.log
+logs/
+tmp/
+temp/
