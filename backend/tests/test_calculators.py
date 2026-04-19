@@ -187,6 +187,27 @@ class TestCII:
         )
         assert result.rating in ("C", "D", "E")
 
+    def test_corrections_reduce_attained_aer(self):
+        records = [{"fuel_type_code": "vlsfo", "consumption_tonnes": 5000}]
+        baseline = calculate_cii(
+            "bulk_carrier", 80000, 40000, records, 50000, 2025, FUEL_TYPES,
+        )
+        corrections = [
+            {"correction_type": "ice_class", "co2_offset_tonnes": 500},
+            {"correction_type": "electrical_consumer", "co2_offset_tonnes": 200},
+            {"correction_type": "cargo_heating", "co2_offset_tonnes": 100},
+        ]
+        corrected = calculate_cii(
+            "bulk_carrier", 80000, 40000, records, 50000, 2025, FUEL_TYPES,
+            corrections=corrections,
+        )
+        assert corrected.attained_aer < baseline.attained_aer
+        assert corrected.uncorrected_attained_aer == baseline.attained_aer
+        assert len(corrected.corrections) == 3
+        assert sum(c.co2_offset_tonnes for c in corrected.corrections) == 800
+        # Total CO2 reduced by offset sum
+        assert corrected.uncorrected_co2_tonnes - corrected.total_co2_tonnes == 800
+
 
 # ============================================================
 # FuelEU Tests

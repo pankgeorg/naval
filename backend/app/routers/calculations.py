@@ -66,6 +66,7 @@ async def _get_voyages_for_year(session: AsyncSession, ship_id: UUID, year: int)
             selectinload(Voyage.port_calls).selectinload(PortCall.fuel_records),
             selectinload(Voyage.port_calls).selectinload(PortCall.port),
             selectinload(Voyage.legs).selectinload(VoyageLeg.fuel_records),
+            selectinload(Voyage.corrections),
         )
     )
     voyages = result.scalars().all()
@@ -110,7 +111,18 @@ async def _get_voyages_for_year(session: AsyncSession, ship_id: UUID, year: int)
                     for fr in pc.fuel_records
                 ],
             })
-        voyages_data.append({"legs": legs_data, "port_calls": pcs_data})
+        corrections_data = [
+            {
+                "correction_type": c.correction_type,
+                "co2_offset_tonnes": c.co2_offset_tonnes or 0.0,
+            }
+            for c in v.corrections
+        ]
+        voyages_data.append({
+            "legs": legs_data,
+            "port_calls": pcs_data,
+            "corrections": corrections_data,
+        })
     return voyages_data
 
 
@@ -176,14 +188,17 @@ async def get_cii(
 
     fuel_records = []
     total_distance = 0.0
+    corrections = []
     for v in voyages_data:
         for leg in v["legs"]:
             fuel_records.extend(leg["fuel_records"])
             total_distance += leg.get("distance_nm") or 0.0
+        corrections.extend(v.get("corrections", []))
 
     result = calculate_cii(
         ship.ship_type.value, ship.dwt, ship.gt,
         fuel_records, total_distance, year, fuel_types,
+        corrections=corrections,
     )
     return asdict(result)
 
@@ -271,14 +286,17 @@ async def get_annual_report(
 
     fuel_records = []
     total_distance = 0.0
+    corrections = []
     for v in voyages_data:
         for leg in v["legs"]:
             fuel_records.extend(leg["fuel_records"])
             total_distance += leg.get("distance_nm") or 0.0
+        corrections.extend(v.get("corrections", []))
 
     cii_result = calculate_cii(
         ship.ship_type.value, ship.dwt, ship.gt,
         fuel_records, total_distance, year, fuel_types,
+        corrections=corrections,
     )
     fueleu_result = calculate_fueleu(voyages_data, year, fuel_types)
     ets_result = calculate_eu_ets(voyages_data, year, fuel_types)
