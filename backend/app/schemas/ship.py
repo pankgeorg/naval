@@ -96,6 +96,8 @@ class ShipUpdate(BaseModel):
     name: str | None = None
     flag_state: str | None = None
     ship_type: str | None = None
+    build_date: date | None = None
+    delivery_date: date | None = None
     dwt: float | None = None
     gt: float | None = None
     nt: float | None = None
