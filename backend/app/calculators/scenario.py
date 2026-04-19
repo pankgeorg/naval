@@ -70,17 +70,18 @@ def _modify_voyages(
 ) -> list[dict]:
     modified = copy.deepcopy(voyages)
     speed_factor = 1 + speed_change_pct / 100
-    consumption_factor = speed_factor ** 3
+    # Fuel rate scales as speed³ (cube law) but duration scales as 1/speed,
+    # so total per-voyage fuel scales as speed² — the extra runtime at the
+    # reduced rate partially offsets the rate savings.
+    consumption_factor = speed_factor ** 2
 
     for voyage in modified:
         for leg in voyage.get("legs", []):
-            # Adjust speed
             if leg.get("average_speed_kn"):
                 leg["average_speed_kn"] *= speed_factor
             if leg.get("hours_at_sea") and speed_factor != 0:
                 leg["hours_at_sea"] /= speed_factor
 
-            # Scale consumption (speed³ fuel relationship)
             for rec in leg.get("fuel_records", []):
                 rec["consumption_tonnes"] *= consumption_factor
 
