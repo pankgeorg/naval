@@ -8,8 +8,10 @@ import { getEEDI, getCII, getFuelEU, getEUETS } from '../api/calculations';
 import type { Ship } from '../types/ship';
 import type { Voyage } from '../types/voyage';
 import CIIRatingBadge from '../components/compliance/CIIRatingBadge';
+import CIIBreakdown from '../components/compliance/CIIBreakdown';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
+import type { CIIResult } from '../types/calculations';
 import { formatNumber, formatCurrency, shipTypeLabel } from '../utils/formatters';
 
 const VALID_TABS = ['overview', 'eedi', 'cii', 'fueleu', 'euets', 'voyages'];
@@ -142,6 +144,7 @@ export default function ShipDetail() {
             <MetricCard title={t('compliance:cii.totalCo2')} value={`${formatNumber((cii as Record<string, number>).total_co2_tonnes)} t`} tooltip={t('compliance:cii.totalCo2Tooltip')} />
             <MetricCard title={t('compliance:cii.totalDistance')} value={`${formatNumber((cii as Record<string, number>).total_distance_nm, 0)} nm`} tooltip={t('compliance:cii.totalDistanceTooltip')} />
           </div>
+          <CIIBreakdown cii={cii as unknown as CIIResult} />
         </div>
       )}
 

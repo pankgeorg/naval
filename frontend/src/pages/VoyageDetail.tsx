@@ -6,6 +6,7 @@ import { getShip } from '../api/ships';
 import type { Voyage } from '../types/voyage';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
+import CIICorrectionsEditor from '../components/voyage/CIICorrectionsEditor';
 import { formatNumber } from '../utils/formatters';
 
 export default function VoyageDetail() {
@@ -40,6 +41,10 @@ export default function VoyageDetail() {
         <MetricCard title={t('voyage:portCalls')} value={voyage.port_calls.length} />
         <MetricCard title={t('voyage:legs')} value={voyage.legs.length} />
         <MetricCard title={t('voyage:status')} value={voyage.status} />
+      </div>
+
+      <div className="mb-6">
+        <CIICorrectionsEditor voyageId={voyage.id} />
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">

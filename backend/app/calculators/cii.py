@@ -1,7 +1,14 @@
 """CII (Carbon Intensity Indicator) calculator."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from app.calculators.constants import CII_REF_LINES, CII_REDUCTION_FACTORS, CII_RATING_BOUNDARIES
+
+
+@dataclass
+class CIIBreakdownItem:
+    label: str
+    correction_type: str
+    co2_offset_tonnes: float
 
 
 @dataclass
@@ -17,6 +24,9 @@ class CIIResult:
     total_distance_nm: float
     capacity: float
     capacity_type: str
+    uncorrected_co2_tonnes: float = 0.0
+    uncorrected_attained_aer: float = 0.0
+    corrections: list[CIIBreakdownItem] = field(default_factory=list)
 
 
 def get_cii_capacity(ship_type: str, dwt: float, gt: float) -> tuple[float, str]:
@@ -27,6 +37,13 @@ def get_cii_capacity(ship_type: str, dwt: float, gt: float) -> tuple[float, str]
     return (gt if cap_type == "gt" else dwt), cap_type
 
 
+_CORRECTION_LABELS = {
+    "ice_class": "Ice-class correction",
+    "electrical_consumer": "Electrical consumers (reefer/aux)",
+    "cargo_heating": "Cargo heating",
+}
+
+
 def calculate_cii(
     ship_type: str,
     dwt: float,
@@ -35,11 +52,13 @@ def calculate_cii(
     annual_distance_nm: float,
     year: int,
     fuel_types: dict,
+    corrections: list[dict] | None = None,
 ) -> CIIResult:
     """Calculate CII for a ship for a given year.
 
     annual_fuel_records: list of dicts with keys: fuel_type_code, consumption_tonnes
     fuel_types: dict mapping code to dict with cf_t_co2_per_t
+    corrections: optional list of dicts with keys: correction_type, co2_offset_tonnes
     """
     total_co2_g = 0.0
     for rec in annual_fuel_records:
@@ -47,11 +66,29 @@ def calculate_cii(
         cf = ft.get("cf_t_co2_per_t", 3.114)
         total_co2_g += rec["consumption_tonnes"] * cf * 1_000_000
 
+    uncorrected_co2_tonnes = total_co2_g / 1_000_000
+
+    breakdown: list[CIIBreakdownItem] = []
+    total_offset_tonnes = 0.0
+    for c in corrections or []:
+        offset = float(c.get("co2_offset_tonnes") or 0.0)
+        ctype = c.get("correction_type", "unknown")
+        breakdown.append(CIIBreakdownItem(
+            label=_CORRECTION_LABELS.get(ctype, ctype),
+            correction_type=ctype,
+            co2_offset_tonnes=round(offset, 4),
+        ))
+        total_offset_tonnes += offset
+
+    corrected_co2_tonnes = max(uncorrected_co2_tonnes - total_offset_tonnes, 0.0)
+
     capacity, cap_type = get_cii_capacity(ship_type, dwt, gt)
 
     if annual_distance_nm > 0 and capacity > 0:
-        attained_aer = total_co2_g / (capacity * annual_distance_nm)
+        uncorrected_aer = (uncorrected_co2_tonnes * 1_000_000) / (capacity * annual_distance_nm)
+        attained_aer = (corrected_co2_tonnes * 1_000_000) / (capacity * annual_distance_nm)
     else:
+        uncorrected_aer = 0.0
         attained_aer = 0.0
 
     ref_line = CII_REF_LINES.get(ship_type)
@@ -92,8 +129,11 @@ def calculate_cii(
             "C_upper": round(d3 * required_cii, 4),
             "D_upper": round(d4 * required_cii, 4),
         },
-        total_co2_tonnes=round(total_co2_g / 1_000_000, 4),
+        total_co2_tonnes=round(corrected_co2_tonnes, 4),
         total_distance_nm=annual_distance_nm,
         capacity=capacity,
         capacity_type=cap_type,
+        uncorrected_co2_tonnes=round(uncorrected_co2_tonnes, 4),
+        uncorrected_attained_aer=round(uncorrected_aer, 4),
+        corrections=breakdown,
     )

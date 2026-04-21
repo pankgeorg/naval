@@ -32,3 +32,6 @@ class Voyage(Base):
         back_populates="voyage", cascade="all, delete-orphan",
         order_by="VoyageLeg.leg_order",
     )
+    corrections: Mapped[list["CIICorrection"]] = relationship(
+        back_populates="voyage", cascade="all, delete-orphan",
+    )

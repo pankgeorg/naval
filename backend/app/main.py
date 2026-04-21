@@ -11,12 +11,12 @@ from app.auth.schemas import UserCreate, UserRead, UserUpdate
 from app.auth.models import User  # noqa: F401 — ensure model is registered
 from app.models import (  # noqa: F401 — register all models with Base
     Ship, Engine, Port, Voyage, PortCall, VoyageLeg,
-    TrackPoint, FuelConsumption, PoolingGroup,
+    TrackPoint, FuelConsumption, PoolingGroup, CIICorrection,
     FuelType, EEDIRefLine, CIIRefLine, CIIRatingBoundary,
 )
 from app.routers import (
     ships, engines, voyages, port_calls, voyage_legs,
-    ports, calculations, scenarios, reference,
+    ports, calculations, scenarios, reference, cii_corrections,
 )
 
 
@@ -78,6 +78,7 @@ app.include_router(ports.router)
 app.include_router(calculations.router)
 app.include_router(scenarios.router)
 app.include_router(reference.router)
+app.include_router(cii_corrections.router)
 
 
 @app.get("/api/health")

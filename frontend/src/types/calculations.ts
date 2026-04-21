@@ -8,6 +8,12 @@ export interface EEDIResult {
   gap_pct: number;
 }
 
+export interface CIIBreakdownItem {
+  label: string;
+  correction_type: string;
+  co2_offset_tonnes: number;
+}
+
 export interface CIIResult {
   year: number;
   attained_aer: number;
@@ -20,6 +26,9 @@ export interface CIIResult {
   total_distance_nm: number;
   capacity: number;
   capacity_type: string;
+  uncorrected_co2_tonnes: number;
+  uncorrected_attained_aer: number;
+  corrections: CIIBreakdownItem[];
 }
 
 export interface FuelEUResult {
