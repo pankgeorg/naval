@@ -102,7 +102,7 @@
     "computing": "Computing...",
     "adjustPrompt": "Adjust parameters to see scenario comparison.",
     "requiresVoyageData": "Note: Requires voyage data for the selected year.",
-    "ciiRatingTooltip": "The projected CII rating under this scenario. Speed reduction follows a cubic relationship (fuel ∝ speed³), so even small speed reductions can significantly improve the rating.",
+    "ciiRatingTooltip": "The projected CII rating under this scenario. Fuel rate scales as speed³ but duration scales as 1/speed, so total per-voyage fuel scales as speed² — a 10% speed reduction yields roughly 19% less fuel, not 27%.",
     "fueleuIntensityTooltip": "The projected WtW GHG intensity. Switching to low-carbon fuels (bio-methanol, e-methanol, green NH₃) can dramatically reduce this value. RFNBOs get a 2× energy credit until 2033.",
     "etsCostTooltip": "The projected EU ETS cost. Affected by both emission levels (speed, fuel mix) and EUA price assumptions. Speed reduction reduces fuel consumption and thus emissions.",
     "deltaTooltip": "The difference between baseline and scenario results, showing the financial and environmental impact of proposed operational changes."
