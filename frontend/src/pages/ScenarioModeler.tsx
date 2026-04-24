@@ -209,8 +209,8 @@ export default function ScenarioModeler() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-1 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">{t('scenario:year')}</label>
             <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="w-full border border-gray-300 rounded-lg px-3 py-2">
@@ -295,7 +295,7 @@ export default function ScenarioModeler() {
           </div>
         </div>
 
-        <div className="col-span-2 relative">
+        <div className="lg:col-span-2 relative">
           {loading && baseline && scenario && (
             <div className="absolute top-2 right-2 z-10 flex items-center gap-2 text-xs text-gray-500 bg-white/80 rounded-full px-2 py-1 border border-gray-200">
               <Loader2 className="w-3 h-3 animate-spin" /> updating
@@ -381,7 +381,7 @@ export default function ScenarioModeler() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-gray-500 text-sm mb-3">{t('scenario:baseline')}</h3>
                   <div className="space-y-3">
