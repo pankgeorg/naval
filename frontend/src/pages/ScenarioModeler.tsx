@@ -141,7 +141,7 @@ export default function ScenarioModeler() {
   const ciiTrend = ciiDiff !== 0 ? ciiGradeTrend : aerTrend;
   const ciiTrendValue = ciiDiff !== 0
     ? `${Math.abs(ciiDiff)} grade${Math.abs(ciiDiff) > 1 ? 's' : ''}`
-    : Math.abs(aerPct) >= 0.001 ? `${Math.abs(aerPct).toFixed(3)}%` : undefined;
+    : Math.abs(aerPct) >= 0.05 ? `${Math.abs(aerPct).toFixed(1)}%` : undefined;
 
   const baseFueleu = (baseline?.fueleu?.weighted_intensity as number) || 0;
   const scenFueleu = (scenario?.fueleu?.weighted_intensity as number) || 0;
@@ -161,10 +161,10 @@ export default function ScenarioModeler() {
       : fueleuBalanceImproved ? 'down' : 'up';
   // Prefer intensity delta when it exists (fuel mix changed); otherwise fall back to balance
   const fueleuTrend = Math.abs(fueleuPct) >= 0.01 ? fueleuIntensityTrend : fueleuBalanceTrend;
-  const fueleuTrendValue = Math.abs(fueleuPct) >= 0.001
-    ? `${Math.abs(fueleuPct).toFixed(3)}%`
-    : Math.abs(fueleuBalancePct) >= 0.001
-      ? `balance ${fueleuBalancePct > 0 ? '+' : ''}${fueleuBalancePct.toFixed(3)}%`
+  const fueleuTrendValue = Math.abs(fueleuPct) >= 0.05
+    ? `${Math.abs(fueleuPct).toFixed(1)}%`
+    : Math.abs(fueleuBalancePct) >= 0.05
+      ? `balance ${fueleuBalancePct > 0 ? '+' : ''}${fueleuBalancePct.toFixed(1)}%`
       : undefined;
 
   const formatBalance = (mj: number) => {
@@ -424,7 +424,7 @@ export default function ScenarioModeler() {
                       value={etsValue(scenario)}
                       valueColor={hasMeaningfulEu ? colorFor(etsTrend) : undefined}
                       trend={hasMeaningfulEu && Math.abs(etsPct) >= 0.01 ? etsTrend : undefined}
-                      trendValue={hasMeaningfulEu && Math.abs(etsPct) >= 0.001 ? `${Math.abs(etsPct).toFixed(3)}%` : undefined}
+                      trendValue={hasMeaningfulEu && Math.abs(etsPct) >= 0.05 ? `${Math.abs(etsPct).toFixed(1)}%` : undefined}
                     />
                   </div>
                 </div>

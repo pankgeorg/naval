@@ -175,15 +175,15 @@ export default function FuelEUBandsChart({ baseline, scenario, year }: Props) {
       <div className="flex items-center gap-4 text-xs text-gray-700 mt-2 flex-wrap">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-2 h-2 rounded-full bg-gray-900"></span>
-          Baseline {formatNumber(baseline.weighted_intensity, 3)} · {baseline.compliant ? 'compliant' : 'deficit'}
+          Baseline {formatNumber(baseline.weighted_intensity, 3)} gCO₂eq/MJ · {baseline.compliant ? 'compliant' : 'deficit'}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="font-bold text-gray-900">✕</span>
-          Scenario {formatNumber(scenario.weighted_intensity, 3)} · {scenario.compliant ? 'compliant' : 'deficit'}
+          Scenario {formatNumber(scenario.weighted_intensity, 3)} gCO₂eq/MJ · {scenario.compliant ? 'compliant' : 'deficit'}
         </span>
         {!unchanged && (
           <span className={`font-medium ${improved ? 'text-green-700' : 'text-red-700'}`}>
-            {improved ? '▼' : '▲'} {Math.abs(deltaPct).toFixed(3)}% intensity
+            {improved ? '▼' : '▲'} {Math.abs(deltaPct).toFixed(1)}% intensity
           </span>
         )}
       </div>
