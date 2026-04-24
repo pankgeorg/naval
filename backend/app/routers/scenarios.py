@@ -79,9 +79,38 @@ async def run_what_if(
         "has_fuel_data": has_fuel,
     }
 
+    projection = None
+    if data.projection_years:
+        projection = []
+        for yr in data.projection_years:
+            b = run_scenario(
+                ship.ship_type.value, ship.dwt, ship.gt,
+                voyages_data, yr, fuel_types,
+                speed_change_pct=0.0, fuel_mix=None, eua_price_eur=data.eua_price,
+            )
+            s = run_scenario(
+                ship.ship_type.value, ship.dwt, ship.gt,
+                voyages_data, yr, fuel_types,
+                speed_change_pct=data.speed_change_pct,
+                fuel_mix=data.fuel_mix,
+                eua_price_eur=data.eua_price,
+            )
+            projection.append({
+                "year": yr,
+                "baseline": {
+                    "cii": asdict(b.cii),
+                    "fueleu": asdict(b.fueleu),
+                },
+                "scenario": {
+                    "cii": asdict(s.cii),
+                    "fueleu": asdict(s.fueleu),
+                },
+            })
+
     return {
         "baseline": baseline_dict,
         "scenario": scenario_dict,
         "delta": delta,
         "meta": meta,
+        "projection": projection,
     }

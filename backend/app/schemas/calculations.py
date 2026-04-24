@@ -64,6 +64,7 @@ class ScenarioRequest(BaseModel):
     speed_change_pct: float = 0.0
     fuel_mix: dict[str, float] | None = None
     eua_price: float = 75.0
+    projection_years: list[int] | None = None
 
 
 class ScenarioResponse(BaseModel):

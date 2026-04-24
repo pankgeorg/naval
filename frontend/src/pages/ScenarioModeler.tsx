@@ -6,6 +6,7 @@ import { runScenario } from '../api/calculations';
 import { getShip } from '../api/ships';
 import SpeedSlider from '../components/scenarios/SpeedSlider';
 import FuelMixSlider from '../components/scenarios/FuelMixSlider';
+import ScenarioBandsPanel from '../components/scenarios/ScenarioBandsPanel';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import { formatNumber, formatCurrency } from '../utils/formatters';
@@ -41,11 +42,15 @@ export default function ScenarioModeler() {
         for (const [k, v] of Object.entries(fuelMix)) {
           if (v > 0) mixNormalized[k] = v / 100;
         }
+        const projectionYears = [year, 2030, 2035, 2040, 2045, 2050]
+          .filter((y, i, arr) => arr.indexOf(y) === i && y >= year)
+          .sort((a, b) => a - b);
         const data = await runScenario(id, {
           year,
           speed_change_pct: speedChange,
           fuel_mix: Object.keys(mixNormalized).length > 0 ? mixNormalized : null,
           eua_price: euaPrice,
+          projection_years: projectionYears,
         });
         setResult(data);
       } catch (err) {
@@ -206,6 +211,29 @@ export default function ScenarioModeler() {
                   <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <p className="text-sm text-blue-700">{t('scenario:noEuCoverage')}</p>
                 </div>
+              )}
+
+              {hasVoyages && hasFuel && (
+                <ScenarioBandsPanel
+                  year={year}
+                  baselineCii={baseline.cii as unknown as {
+                    attained_aer: number; rating: string; required_cii: number;
+                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
+                  }}
+                  scenarioCii={scenario.cii as unknown as {
+                    attained_aer: number; rating: string; required_cii: number;
+                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
+                  }}
+                  baselineFueleu={baseline.fueleu as unknown as {
+                    weighted_intensity: number; target_intensity: number;
+                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
+                  }}
+                  scenarioFueleu={scenario.fueleu as unknown as {
+                    weighted_intensity: number; target_intensity: number;
+                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
+                  }}
+                  projection={(result?.projection as Parameters<typeof ScenarioBandsPanel>[0]['projection']) || null}
+                />
               )}
 
               <div className="grid grid-cols-2 gap-4">
