@@ -70,6 +70,10 @@ class ScenarioRequest(BaseModel):
     # voyage log is incomplete and the user wants to enter yearly totals.
     override_distance_nm: float | None = None
     override_fuel_tonnes: float | None = None
+    # Ephemeral CII corrections applied only to the scenario branch (not
+    # persisted, not applied to baseline) — used for "what if I also record
+    # these corrections" planning.
+    extra_corrections: list[dict] | None = None
 
 
 class ScenarioResponse(BaseModel):
