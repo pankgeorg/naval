@@ -332,6 +332,29 @@ export default function ScenarioModeler() {
                 </div>
               )}
 
+              {(baseAer > 0 || scenAer > 0) && (
+                <ScenarioBandsPanel
+                  year={year}
+                  baselineCii={baseline.cii as unknown as {
+                    attained_aer: number; rating: string; required_cii: number;
+                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
+                  }}
+                  scenarioCii={scenario.cii as unknown as {
+                    attained_aer: number; rating: string; required_cii: number;
+                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
+                  }}
+                  baselineFueleu={baseline.fueleu as unknown as {
+                    weighted_intensity: number; target_intensity: number;
+                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
+                  }}
+                  scenarioFueleu={scenario.fueleu as unknown as {
+                    weighted_intensity: number; target_intensity: number;
+                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
+                  }}
+                  projection={(result?.projection as Parameters<typeof ScenarioBandsPanel>[0]['projection']) || null}
+                />
+              )}
+
               {/* Scenario-only CII corrections — collapsible, local-only */}
               <div className="bg-white rounded-lg border border-gray-200">
                 <button
@@ -357,29 +380,6 @@ export default function ScenarioModeler() {
                   </div>
                 )}
               </div>
-
-              {(baseAer > 0 || scenAer > 0) && (
-                <ScenarioBandsPanel
-                  year={year}
-                  baselineCii={baseline.cii as unknown as {
-                    attained_aer: number; rating: string; required_cii: number;
-                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
-                  }}
-                  scenarioCii={scenario.cii as unknown as {
-                    attained_aer: number; rating: string; required_cii: number;
-                    band_boundaries: { A_upper: number; B_upper: number; C_upper: number; D_upper: number };
-                  }}
-                  baselineFueleu={baseline.fueleu as unknown as {
-                    weighted_intensity: number; target_intensity: number;
-                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
-                  }}
-                  scenarioFueleu={scenario.fueleu as unknown as {
-                    weighted_intensity: number; target_intensity: number;
-                    compliance_balance_mj: number; compliant: boolean; total_covered_energy_mj: number;
-                  }}
-                  projection={(result?.projection as Parameters<typeof ScenarioBandsPanel>[0]['projection']) || null}
-                />
-              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
