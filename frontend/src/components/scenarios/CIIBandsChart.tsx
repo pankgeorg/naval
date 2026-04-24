@@ -97,7 +97,7 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
                 x={x1 + width / 2}
                 y={bandsY + bandsH / 2 + 6}
                 textAnchor="middle"
-                fontSize={18}
+                style={{ fontSize: '18px' }}
                 fontWeight={700}
                 fill={BAND_TEXT[band.key]}
                 opacity={0.7}
@@ -116,7 +116,7 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
               x={scale(v)}
               y={bandsY + bandsH + 14}
               textAnchor="middle"
-              fontSize={11}
+              style={{ fontSize: '12px' }}
               fill="#6b7280"
             >
               {formatNumber(v, 3)}
@@ -138,7 +138,7 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
           x={requiredX}
           y={bandsY - 14}
           textAnchor="middle"
-          fontSize={10}
+          style={{ fontSize: '11px' }}
           fill="#374151"
         >
           required {formatNumber(baseline.required_cii, 3)}
