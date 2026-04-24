@@ -94,7 +94,16 @@ export default function ScenarioModeler() {
   const scenCii = (scenario?.cii?.rating as string) || '';
   const ciiDiff = ciiOrder[baseCii] !== undefined && ciiOrder[scenCii] !== undefined
     ? ciiOrder[baseCii] - ciiOrder[scenCii] : 0;
-  const ciiTrend: 'up' | 'down' | 'neutral' = ciiDiff > 0 ? 'down' : ciiDiff < 0 ? 'up' : 'neutral';
+  const ciiGradeTrend: 'up' | 'down' | 'neutral' = ciiDiff > 0 ? 'down' : ciiDiff < 0 ? 'up' : 'neutral';
+
+  const baseAer = (baseline?.cii?.attained_aer as number) || 0;
+  const scenAer = (scenario?.cii?.attained_aer as number) || 0;
+  const aerPct = pctChange(baseAer, scenAer);
+  const aerTrend = trendFor(aerPct, true);
+  const ciiTrend = ciiDiff !== 0 ? ciiGradeTrend : aerTrend;
+  const ciiTrendValue = ciiDiff !== 0
+    ? `${Math.abs(ciiDiff)} grade${Math.abs(ciiDiff) > 1 ? 's' : ''}`
+    : Math.abs(aerPct) >= 0.01 ? `${Math.abs(aerPct).toFixed(1)}%` : undefined;
 
   const baseFueleu = (baseline?.fueleu?.weighted_intensity as number) || 0;
   const scenFueleu = (scenario?.fueleu?.weighted_intensity as number) || 0;
@@ -176,7 +185,12 @@ export default function ScenarioModeler() {
                 <div>
                   <h3 className="font-semibold text-gray-500 text-sm mb-3">{t('scenario:baseline')}</h3>
                   <div className="space-y-3">
-                    <MetricCard title={t('compliance:scenario.ciiRating')} value={(baseline.cii?.rating as string) || '—'} tooltip={t('compliance:scenario.ciiRatingTooltip')} />
+                    <MetricCard
+                      title={t('compliance:scenario.ciiRating')}
+                      value={(baseline.cii?.rating as string) || '—'}
+                      subtitle={baseAer > 0 ? `${formatNumber(baseAer)} gCO₂/t·nm` : undefined}
+                      tooltip={t('compliance:scenario.ciiRatingTooltip')}
+                    />
                     <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={fueleuValue(baseline)} subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined} tooltip={t('compliance:scenario.fueleuIntensityTooltip')} />
                     <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(baseline)} tooltip={t('compliance:scenario.etsCostTooltip')} />
                   </div>
@@ -187,9 +201,10 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.ciiRating')}
                       value={(scenario.cii?.rating as string) || '—'}
+                      subtitle={scenAer > 0 ? `${formatNumber(scenAer)} gCO₂/t·nm` : undefined}
                       valueColor={colorFor(ciiTrend)}
-                      trend={ciiDiff !== 0 ? ciiTrend : undefined}
-                      trendValue={ciiDiff !== 0 ? `${Math.abs(ciiDiff)} grade${Math.abs(ciiDiff) > 1 ? 's' : ''}` : undefined}
+                      trend={ciiTrendValue ? ciiTrend : undefined}
+                      trendValue={ciiTrendValue}
                     />
                     <MetricCard
                       title={t('compliance:scenario.fueleuIntensity')}
