@@ -57,7 +57,8 @@ export default function ScenarioCorrectionsEditor({ corrections, onChange }: Pro
       )}
 
       {corrections.length > 0 && (
-        <table className="w-full text-sm mb-3">
+        <div className="overflow-x-auto -mx-1 px-1 mb-3">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b text-xs text-gray-500">
               <th className="text-left py-2 px-2">{t('corrections.type')}</th>
@@ -163,6 +164,7 @@ export default function ScenarioCorrectionsEditor({ corrections, onChange }: Pro
             ))}
           </tbody>
         </table>
+        </div>
       )}
 
       <button

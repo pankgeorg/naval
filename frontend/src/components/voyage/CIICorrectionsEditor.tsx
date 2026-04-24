@@ -131,7 +131,8 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
       )}
 
       {(items.length > 0 || draft) && (
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto -mx-1 px-1">
+        <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b text-xs text-gray-500">
               <th className="text-left py-2 px-2">{t('corrections.type')}</th>
@@ -377,6 +378,7 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
             )}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );
