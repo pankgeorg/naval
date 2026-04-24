@@ -9,6 +9,7 @@ import FuelMixSlider from '../components/scenarios/FuelMixSlider';
 import ScenarioBandsPanel from '../components/scenarios/ScenarioBandsPanel';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
+import NumberField from '../components/shared/NumberField';
 import { formatNumber, formatCurrency } from '../utils/formatters';
 
 interface ScenarioMeta {
@@ -225,12 +226,12 @@ export default function ScenarioModeler() {
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Distance (nm)</label>
-              <input
-                type="number"
+              <NumberField
+                value={overrideDistance}
+                onChange={setOverrideDistance}
+                fallback={meta?.voyage_totals?.distance_nm ?? 0}
                 step="1"
                 min="0"
-                value={overrideDistance ?? meta?.voyage_totals?.distance_nm ?? 0}
-                onChange={(e) => setOverrideDistance(e.target.value === '' ? null : parseFloat(e.target.value))}
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
               />
               <p className="text-xs text-gray-400 mt-0.5">
@@ -239,12 +240,12 @@ export default function ScenarioModeler() {
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Fuel (t)</label>
-              <input
-                type="number"
+              <NumberField
+                value={overrideFuel}
+                onChange={setOverrideFuel}
+                fallback={meta?.voyage_totals?.fuel_tonnes ?? 0}
                 step="0.1"
                 min="0"
-                value={overrideFuel ?? meta?.voyage_totals?.fuel_tonnes ?? 0}
-                onChange={(e) => setOverrideFuel(e.target.value === '' ? null : parseFloat(e.target.value))}
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
               />
               <p className="text-xs text-gray-400 mt-0.5">

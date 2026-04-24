@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2 } from 'lucide-react';
+import NumberField from '../shared/NumberField';
 import {
   listCIICorrections,
   createCIICorrection,
@@ -174,12 +175,11 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                   />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={it.quantity ?? ''}
-                    onChange={(e) => updateField(it.id, 'quantity', e.target.value === '' ? null : parseFloat(e.target.value))}
+                  <NumberField
+                    value={it.quantity ?? null}
+                    onChange={(v) => updateField(it.id, 'quantity', v)}
                     onBlur={() => commitUpdate(it.id)}
+                    step="0.1"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
                 </td>
@@ -194,12 +194,11 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                   />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <input
-                    type="number"
-                    step="0.01"
+                  <NumberField
                     value={it.co2_offset_tonnes}
-                    onChange={(e) => updateField(it.id, 'co2_offset_tonnes', parseFloat(e.target.value) || 0)}
+                    onChange={(v) => updateField(it.id, 'co2_offset_tonnes', v ?? 0)}
                     onBlur={() => commitUpdate(it.id)}
+                    step="0.01"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
                 </td>
@@ -264,14 +263,10 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                   />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <input
-                    type="number"
+                  <NumberField
+                    value={draft.quantity ?? null}
+                    onChange={(v) => setDraft({ ...draft, quantity: v })}
                     step="0.1"
-                    value={draft.quantity ?? ''}
-                    onChange={(e) => setDraft({
-                      ...draft,
-                      quantity: e.target.value === '' ? null : parseFloat(e.target.value),
-                    })}
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
                 </td>
@@ -284,11 +279,10 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                   />
                 </td>
                 <td className="py-2 px-2 text-right">
-                  <input
-                    type="number"
-                    step="0.01"
+                  <NumberField
                     value={draft.co2_offset_tonnes}
-                    onChange={(e) => setDraft({ ...draft, co2_offset_tonnes: parseFloat(e.target.value) || 0 })}
+                    onChange={(v) => setDraft({ ...draft, co2_offset_tonnes: v ?? 0 })}
+                    step="0.01"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
                 </td>
