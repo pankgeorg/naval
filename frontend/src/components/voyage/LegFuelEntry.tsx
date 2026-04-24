@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react';
+import NumberField from '../shared/NumberField';
 
 interface FuelRecord {
   fuel_type_code: string;
@@ -55,11 +56,10 @@ export default function LegFuelEntry({ legIndex, records, onChange }: Props) {
             <option value="e_methanol">E-Methanol</option>
             <option value="green_nh3">Green Ammonia</option>
           </select>
-          <input
-            type="number"
-            step="0.1"
+          <NumberField
             value={rec.consumption_tonnes}
-            onChange={(e) => updateRecord(i, 'consumption_tonnes', parseFloat(e.target.value) || 0)}
+            onChange={(v) => updateRecord(i, 'consumption_tonnes', v ?? 0)}
+            step="0.1"
             placeholder="Tonnes"
             className="border border-gray-300 rounded px-2 py-1 text-sm w-24"
           />
