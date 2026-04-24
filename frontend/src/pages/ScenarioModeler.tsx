@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, ChevronDown, ChevronRight, Info, Loader2, RotateCcw } from 'lucide-react';
@@ -51,12 +51,24 @@ export default function ScenarioModeler() {
   const [extraCorrections, setExtraCorrections] = useState<CIICorrectionInput[]>([]);
   const [correctionsOpen, setCorrectionsOpen] = useState(false);
 
+  // Drag-sampling state: during rapid slider drags we run a sparse projection
+  // (2 years) for responsiveness; a short while after the user stops, we fire
+  // a follow-up with the full 6-year projection.
+  const lastChangeRef = useRef<number>(0);
+  const [settleTick, setSettleTick] = useState(0);
+
   useEffect(() => {
     if (id) getShip(id).then((s) => setShipName(s.name));
   }, [id]);
 
   useEffect(() => {
     if (!id) return;
+    const now = Date.now();
+    const msSinceLastChange = now - lastChangeRef.current;
+    lastChangeRef.current = now;
+    // "Dragging" = another change came in within the last 500 ms
+    const dragging = msSinceLastChange < 500;
+
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
@@ -64,9 +76,12 @@ export default function ScenarioModeler() {
         for (const [k, v] of Object.entries(fuelMix)) {
           if (v > 0) mixNormalized[k] = v / 100;
         }
-        const projectionYears = [year, 2030, 2035, 2040, 2045, 2050]
+        const fullYears = [year, 2030, 2035, 2040, 2045, 2050]
           .filter((y, i, arr) => arr.indexOf(y) === i && y >= year)
           .sort((a, b) => a - b);
+        const projectionYears = dragging
+          ? [fullYears[0], fullYears[fullYears.length - 1]]
+          : fullYears;
         const data = await runScenario(id, {
           year,
           speed_change_pct: speedChange,
@@ -89,8 +104,18 @@ export default function ScenarioModeler() {
         setLoading(false);
       }
     }, 300);
-    return () => clearTimeout(timer);
-  }, [id, year, speedChange, fuelMix, euaPrice, overrideDistance, overrideFuel, extraCorrections]);
+
+    // Settle timer: when no change for 700ms AND the last fetch was sparse,
+    // re-fetch with the full projection.
+    const settleTimer = dragging
+      ? setTimeout(() => setSettleTick((n) => n + 1), 700)
+      : null;
+
+    return () => {
+      clearTimeout(timer);
+      if (settleTimer) clearTimeout(settleTimer);
+    };
+  }, [id, year, speedChange, fuelMix, euaPrice, overrideDistance, overrideFuel, extraCorrections, settleTick]);
 
   const baseline = result?.baseline as Record<string, Record<string, unknown>> | undefined;
   const scenario = result?.scenario as Record<string, Record<string, unknown>> | undefined;
