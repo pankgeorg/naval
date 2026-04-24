@@ -135,9 +135,9 @@ export default function ScenarioCorrectionsEditor({ corrections, onChange }: Pro
                     return (
                       <div
                         className={`text-[10px] mt-0.5 ${delta >= 0 ? 'text-amber-600' : 'text-blue-600'}`}
-                        title={`Rule of thumb: ${expected.toFixed(2)} t (${rule.note})`}
+                        title={`Rule of thumb: ${expected.toFixed(3)} t (${rule.note})`}
                       >
-                        {sign}{Math.abs(delta).toFixed(2)} t vs rule
+                        {sign}{Math.abs(delta).toFixed(3)} t vs rule
                       </div>
                     );
                   })()}

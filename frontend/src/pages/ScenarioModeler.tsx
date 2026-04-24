@@ -106,7 +106,7 @@ export default function ScenarioModeler() {
 
   const fueleuValue = (data: Record<string, Record<string, unknown>> | undefined) =>
     hasMeaningfulEu
-      ? formatNumber((data?.fueleu?.weighted_intensity as number) || 0)
+      ? formatNumber((data?.fueleu?.weighted_intensity as number) || 0, 3)
       : '—';
 
   const etsValue = (data: Record<string, Record<string, unknown>> | undefined) =>
@@ -141,7 +141,7 @@ export default function ScenarioModeler() {
   const ciiTrend = ciiDiff !== 0 ? ciiGradeTrend : aerTrend;
   const ciiTrendValue = ciiDiff !== 0
     ? `${Math.abs(ciiDiff)} grade${Math.abs(ciiDiff) > 1 ? 's' : ''}`
-    : Math.abs(aerPct) >= 0.01 ? `${Math.abs(aerPct).toFixed(1)}%` : undefined;
+    : Math.abs(aerPct) >= 0.001 ? `${Math.abs(aerPct).toFixed(3)}%` : undefined;
 
   const baseFueleu = (baseline?.fueleu?.weighted_intensity as number) || 0;
   const scenFueleu = (scenario?.fueleu?.weighted_intensity as number) || 0;
@@ -161,17 +161,17 @@ export default function ScenarioModeler() {
       : fueleuBalanceImproved ? 'down' : 'up';
   // Prefer intensity delta when it exists (fuel mix changed); otherwise fall back to balance
   const fueleuTrend = Math.abs(fueleuPct) >= 0.01 ? fueleuIntensityTrend : fueleuBalanceTrend;
-  const fueleuTrendValue = Math.abs(fueleuPct) >= 0.01
-    ? `${Math.abs(fueleuPct).toFixed(1)}%`
-    : Math.abs(fueleuBalancePct) >= 0.01
-      ? `balance ${fueleuBalancePct > 0 ? '+' : ''}${fueleuBalancePct.toFixed(1)}%`
+  const fueleuTrendValue = Math.abs(fueleuPct) >= 0.001
+    ? `${Math.abs(fueleuPct).toFixed(3)}%`
+    : Math.abs(fueleuBalancePct) >= 0.001
+      ? `balance ${fueleuBalancePct > 0 ? '+' : ''}${fueleuBalancePct.toFixed(3)}%`
       : undefined;
 
   const formatBalance = (mj: number) => {
     const sign = mj >= 0 ? '+' : '−';
     const abs = Math.abs(mj);
-    if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(2)} TJ balance`;
-    if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(0)} GJ balance`;
+    if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(3)} TJ balance`;
+    if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(2)} GJ balance`;
     return `${sign}${abs.toFixed(0)} MJ balance`;
   };
 
@@ -388,7 +388,7 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.ciiRating')}
                       value={(baseline.cii?.rating as string) || '—'}
-                      subtitle={baseAer > 0 ? `${formatNumber(baseAer)} gCO₂/t·nm` : undefined}
+                      subtitle={baseAer > 0 ? `${formatNumber(baseAer, 3)} gCO₂/t·nm` : undefined}
                       tooltip={t('compliance:scenario.ciiRatingTooltip')}
                     />
                     <MetricCard
@@ -406,7 +406,7 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.ciiRating')}
                       value={(scenario.cii?.rating as string) || '—'}
-                      subtitle={scenAer > 0 ? `${formatNumber(scenAer)} gCO₂/t·nm` : undefined}
+                      subtitle={scenAer > 0 ? `${formatNumber(scenAer, 3)} gCO₂/t·nm` : undefined}
                       valueColor={colorFor(ciiTrend)}
                       trend={ciiTrendValue ? ciiTrend : undefined}
                       trendValue={ciiTrendValue}
@@ -424,7 +424,7 @@ export default function ScenarioModeler() {
                       value={etsValue(scenario)}
                       valueColor={hasMeaningfulEu ? colorFor(etsTrend) : undefined}
                       trend={hasMeaningfulEu && Math.abs(etsPct) >= 0.01 ? etsTrend : undefined}
-                      trendValue={hasMeaningfulEu && Math.abs(etsPct) >= 0.01 ? `${Math.abs(etsPct).toFixed(1)}%` : undefined}
+                      trendValue={hasMeaningfulEu && Math.abs(etsPct) >= 0.001 ? `${Math.abs(etsPct).toFixed(3)}%` : undefined}
                     />
                   </div>
                 </div>
@@ -433,7 +433,7 @@ export default function ScenarioModeler() {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-semibold text-sm mb-2">{t('scenario:delta')}</h3>
                   <p className="text-sm">{t('scenario:ciiRatingChange')}: {delta.cii_rating_change as string}</p>
-                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {hasMeaningfulEu ? `${formatNumber((delta.fueleu_balance_delta_mj as number) || 0)} MJ` : '—'}</p>
+                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {hasMeaningfulEu ? `${formatNumber((delta.fueleu_balance_delta_mj as number) || 0, 3)} MJ` : '—'}</p>
                   <p className="text-sm">{t('scenario:etsCostDelta')}: {hasMeaningfulEu ? formatCurrency((delta.eu_ets_cost_delta_eur as number) || 0) : '—'}</p>
                 </div>
               )}
