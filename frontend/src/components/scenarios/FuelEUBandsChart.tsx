@@ -105,7 +105,7 @@ export default function FuelEUBandsChart({ baseline, scenario, year }: Props) {
                   x={x1 + w / 2}
                   y={bandsY + bandsH / 2 + 5}
                   textAnchor="middle"
-                  fontSize={11}
+                  style={{ fontSize: '12px' }}
                   fontWeight={600}
                   fill="#374151"
                   opacity={0.7}
@@ -125,7 +125,7 @@ export default function FuelEUBandsChart({ baseline, scenario, year }: Props) {
               x={scale(targetFor(t.pct))}
               y={bandsY + bandsH + 14}
               textAnchor="middle"
-              fontSize={10}
+              style={{ fontSize: '11px' }}
               fill="#6b7280"
             >
               {formatNumber(targetFor(t.pct), 3)}
@@ -147,7 +147,7 @@ export default function FuelEUBandsChart({ baseline, scenario, year }: Props) {
           x={currentTargetX}
           y={bandsY - 14}
           textAnchor="middle"
-          fontSize={10}
+          style={{ fontSize: '11px' }}
           fill="#374151"
         >
           {year} target {formatNumber(currentTarget, 3)}

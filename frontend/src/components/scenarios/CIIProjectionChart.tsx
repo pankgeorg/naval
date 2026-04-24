@@ -113,7 +113,7 @@ export default function CIIProjectionChart({ projection }: Props) {
             key={letter}
             x={W - padR + 8}
             y={yCenter + 4}
-            fontSize={14}
+            style={{ fontSize: '14px' }}
             fontWeight={700}
             fill="#374151"
             opacity={0.6}
@@ -151,7 +151,7 @@ export default function CIIProjectionChart({ projection }: Props) {
           x={xScale(p.year)}
           y={H - 8}
           textAnchor="middle"
-          fontSize={11}
+          style={{ fontSize: '12px' }}
           fill="#6b7280"
         >
           {p.year}
@@ -165,13 +165,13 @@ export default function CIIProjectionChart({ projection }: Props) {
           x={padL - 6}
           y={yScale(v) + 4}
           textAnchor="end"
-          fontSize={10}
+          style={{ fontSize: '11px' }}
           fill="#6b7280"
         >
           {formatNumber(v, 3)}
         </text>
       ))}
-      <text x={padL - 6} y={padT - 6} textAnchor="end" fontSize={10} fill="#6b7280">AER</text>
+      <text x={padL - 6} y={padT - 6} textAnchor="end" style={{ fontSize: '11px' }} fill="#6b7280">AER</text>
     </svg>
   );
 }

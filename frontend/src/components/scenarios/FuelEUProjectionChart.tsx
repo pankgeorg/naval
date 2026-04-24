@@ -81,7 +81,7 @@ export default function FuelEUProjectionChart({ projection }: Props) {
       <text
         x={W - padR + 8}
         y={yScale(projection[projection.length - 1].baseline.fueleu.target_intensity) + 4}
-        fontSize={10}
+        style={{ fontSize: '11px' }}
         fill="#16a34a"
       >
         target
@@ -114,7 +114,7 @@ export default function FuelEUProjectionChart({ projection }: Props) {
           x={xScale(p.year)}
           y={H - 8}
           textAnchor="middle"
-          fontSize={11}
+          style={{ fontSize: '12px' }}
           fill="#6b7280"
         >
           {p.year}
@@ -127,13 +127,13 @@ export default function FuelEUProjectionChart({ projection }: Props) {
           x={padL - 6}
           y={yScale(v) + 4}
           textAnchor="end"
-          fontSize={10}
+          style={{ fontSize: '11px' }}
           fill="#6b7280"
         >
           {formatNumber(v, 3)}
         </text>
       ))}
-      <text x={padL - 6} y={padT - 6} textAnchor="end" fontSize={10} fill="#6b7280">gCO₂eq/MJ</text>
+      <text x={padL - 6} y={padT - 6} textAnchor="end" style={{ fontSize: '11px' }} fill="#6b7280">gCO₂eq/MJ</text>
     </svg>
   );
 }
