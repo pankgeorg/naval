@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, Info, Loader2, RotateCcw } from 'lucide-react';
 import { runScenario } from '../api/calculations';
 import { getShip } from '../api/ships';
 import SpeedSlider from '../components/scenarios/SpeedSlider';
@@ -16,6 +16,19 @@ interface ScenarioMeta {
   total_legs: number;
   eu_covered_legs: number;
   has_fuel_data: boolean;
+  using_override: boolean;
+  ship: {
+    name: string;
+    ship_type: string;
+    dwt: number;
+    gt: number;
+    capacity: number;
+    capacity_type: string;
+  };
+  voyage_totals: {
+    distance_nm: number;
+    fuel_tonnes: number;
+  };
 }
 
 export default function ScenarioModeler() {
@@ -28,6 +41,9 @@ export default function ScenarioModeler() {
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [shipName, setShipName] = useState('');
+  // Annual totals overrides. `null` means use voyage-derived values.
+  const [overrideDistance, setOverrideDistance] = useState<number | null>(null);
+  const [overrideFuel, setOverrideFuel] = useState<number | null>(null);
 
   useEffect(() => {
     if (id) getShip(id).then((s) => setShipName(s.name));
@@ -51,6 +67,8 @@ export default function ScenarioModeler() {
           fuel_mix: Object.keys(mixNormalized).length > 0 ? mixNormalized : null,
           eua_price: euaPrice,
           projection_years: projectionYears,
+          override_distance_nm: overrideDistance,
+          override_fuel_tonnes: overrideFuel,
         });
         setResult(data);
       } catch (err) {
@@ -60,7 +78,7 @@ export default function ScenarioModeler() {
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, [id, year, speedChange, fuelMix, euaPrice]);
+  }, [id, year, speedChange, fuelMix, euaPrice, overrideDistance, overrideFuel]);
 
   const baseline = result?.baseline as Record<string, Record<string, unknown>> | undefined;
   const scenario = result?.scenario as Record<string, Record<string, unknown>> | undefined;
@@ -70,14 +88,17 @@ export default function ScenarioModeler() {
   const hasEuCoverage = meta ? meta.eu_covered_legs > 0 : true;
   const hasVoyages = meta ? meta.total_voyages > 0 : true;
   const hasFuel = meta ? meta.has_fuel_data : true;
+  // With an override the calc uses a synthetic intra-EU leg, so FuelEU / ETS
+  // are meaningful even when the real voyage data has no EU coverage or fuel.
+  const hasMeaningfulEu = (hasEuCoverage && hasFuel) || !!meta?.using_override;
 
   const fueleuValue = (data: Record<string, Record<string, unknown>> | undefined) =>
-    hasEuCoverage && hasFuel
+    hasMeaningfulEu
       ? formatNumber((data?.fueleu?.weighted_intensity as number) || 0)
       : '—';
 
   const etsValue = (data: Record<string, Record<string, unknown>> | undefined) =>
-    hasEuCoverage && hasFuel
+    hasMeaningfulEu
       ? formatCurrency((data?.eu_ets?.cost_eur as number) || 0)
       : '—';
 
@@ -154,7 +175,28 @@ export default function ScenarioModeler() {
         { label: shipName || '…', to: `/ships/${id}` },
         { label: t('scenario:title') },
       ]} />
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('scenario:title')}</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('scenario:title')}</h2>
+
+      {/* Ship data strip */}
+      {meta?.ship && (
+        <div className="bg-white rounded-lg border border-gray-200 p-3 mb-6 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+          <span className="font-semibold text-gray-900">{meta.ship.name}</span>
+          <span className="text-gray-500">
+            <span className="text-gray-400">Type:</span> {meta.ship.ship_type.replace(/_/g, ' ')}
+          </span>
+          <span className="text-gray-500">
+            <span className="text-gray-400">DWT:</span> {formatNumber(meta.ship.dwt, 0)} t
+          </span>
+          <span className="text-gray-500">
+            <span className="text-gray-400">GT:</span> {formatNumber(meta.ship.gt, 0)}
+          </span>
+          <span className="text-gray-500">
+            <span className="text-gray-400">CII capacity basis:</span>{' '}
+            {formatNumber(meta.ship.capacity, 0)} {meta.ship.capacity_type.toUpperCase()}
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-1 space-y-6">
           <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -165,6 +207,58 @@ export default function ScenarioModeler() {
               ))}
             </select>
           </div>
+
+          {/* Annual totals — editable, pre-filled from voyages */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium text-gray-700">Annual totals</h4>
+              {(overrideDistance !== null || overrideFuel !== null) && (
+                <button
+                  type="button"
+                  onClick={() => { setOverrideDistance(null); setOverrideFuel(null); }}
+                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                  title="Reset to voyage-derived values"
+                >
+                  <RotateCcw className="w-3 h-3" /> reset
+                </button>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Distance (nm)</label>
+              <input
+                type="number"
+                step="1"
+                min="0"
+                value={overrideDistance ?? meta?.voyage_totals?.distance_nm ?? 0}
+                onChange={(e) => setOverrideDistance(e.target.value === '' ? null : parseFloat(e.target.value))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-0.5">
+                {overrideDistance !== null ? 'override' : `from voyages: ${formatNumber(meta?.voyage_totals?.distance_nm || 0, 0)}`}
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Fuel (t)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                value={overrideFuel ?? meta?.voyage_totals?.fuel_tonnes ?? 0}
+                onChange={(e) => setOverrideFuel(e.target.value === '' ? null : parseFloat(e.target.value))}
+                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm"
+              />
+              <p className="text-xs text-gray-400 mt-0.5">
+                {overrideFuel !== null ? 'override' : `from voyages: ${formatNumber(meta?.voyage_totals?.fuel_tonnes || 0, 1)}`}
+              </p>
+            </div>
+            {meta?.using_override && (
+              <p className="text-xs text-amber-600 flex items-start gap-1">
+                <Info className="w-3 h-3 mt-0.5 shrink-0" />
+                Using a synthetic intra-EU leg — coverage is 100%.
+              </p>
+            )}
+          </div>
+
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <SpeedSlider value={speedChange} onChange={setSpeedChange} />
           </div>
@@ -189,31 +283,44 @@ export default function ScenarioModeler() {
           </div>
         </div>
 
-        <div className="col-span-2">
-          {loading && <div className="text-center py-12 text-gray-400">{t('scenario:computing')}</div>}
-          {!loading && baseline && scenario && (
-            <div className="space-y-6">
+        <div className="col-span-2 relative">
+          {loading && baseline && scenario && (
+            <div className="absolute top-2 right-2 z-10 flex items-center gap-2 text-xs text-gray-500 bg-white/80 rounded-full px-2 py-1 border border-gray-200">
+              <Loader2 className="w-3 h-3 animate-spin" /> updating
+            </div>
+          )}
+          {!baseline && !scenario && loading && (
+            <div className="text-center py-12 text-gray-400 flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" /> {t('scenario:computing')}
+            </div>
+          )}
+          {baseline && scenario && (
+            <div
+              className={`space-y-6 transition-[filter,opacity] duration-200 ${
+                loading ? 'opacity-60 blur-[1.5px] pointer-events-none' : ''
+              }`}
+            >
               {/* Warnings */}
-              {!hasVoyages && (
+              {!hasVoyages && !meta?.using_override && (
                 <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                   <p className="text-sm text-amber-700">{t('scenario:noVoyages')}</p>
                 </div>
               )}
-              {hasVoyages && !hasFuel && (
+              {hasVoyages && !hasFuel && !meta?.using_override && (
                 <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                   <p className="text-sm text-amber-700">{t('scenario:noFuelData')}</p>
                 </div>
               )}
-              {hasVoyages && hasFuel && !hasEuCoverage && (
+              {hasVoyages && hasFuel && !hasEuCoverage && !meta?.using_override && (
                 <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                   <p className="text-sm text-blue-700">{t('scenario:noEuCoverage')}</p>
                 </div>
               )}
 
-              {hasVoyages && hasFuel && (
+              {(baseAer > 0 || scenAer > 0) && (
                 <ScenarioBandsPanel
                   year={year}
                   baselineCii={baseline.cii as unknown as {
@@ -249,7 +356,7 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.fueleuIntensity')}
                       value={fueleuValue(baseline)}
-                      subtitle={hasEuCoverage && hasFuel ? `gCO₂eq/MJ · ${formatBalance(baseFueleuBalance)}` : undefined}
+                      subtitle={hasMeaningfulEu ? `gCO₂eq/MJ · ${formatBalance(baseFueleuBalance)}` : undefined}
                       tooltip={t('compliance:scenario.fueleuIntensityTooltip')}
                     />
                     <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(baseline)} tooltip={t('compliance:scenario.etsCostTooltip')} />
@@ -269,17 +376,17 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.fueleuIntensity')}
                       value={fueleuValue(scenario)}
-                      subtitle={hasEuCoverage && hasFuel ? `gCO₂eq/MJ · ${formatBalance(scenFueleuBalance)}` : undefined}
-                      valueColor={hasEuCoverage && hasFuel ? colorFor(fueleuTrend) : undefined}
-                      trend={hasEuCoverage && hasFuel && fueleuTrendValue ? fueleuTrend : undefined}
-                      trendValue={hasEuCoverage && hasFuel ? fueleuTrendValue : undefined}
+                      subtitle={hasMeaningfulEu ? `gCO₂eq/MJ · ${formatBalance(scenFueleuBalance)}` : undefined}
+                      valueColor={hasMeaningfulEu ? colorFor(fueleuTrend) : undefined}
+                      trend={hasMeaningfulEu && fueleuTrendValue ? fueleuTrend : undefined}
+                      trendValue={hasMeaningfulEu ? fueleuTrendValue : undefined}
                     />
                     <MetricCard
                       title={t('compliance:scenario.etsCost')}
                       value={etsValue(scenario)}
-                      valueColor={hasEuCoverage && hasFuel ? colorFor(etsTrend) : undefined}
-                      trend={hasEuCoverage && hasFuel && Math.abs(etsPct) >= 0.01 ? etsTrend : undefined}
-                      trendValue={hasEuCoverage && hasFuel && Math.abs(etsPct) >= 0.01 ? `${Math.abs(etsPct).toFixed(1)}%` : undefined}
+                      valueColor={hasMeaningfulEu ? colorFor(etsTrend) : undefined}
+                      trend={hasMeaningfulEu && Math.abs(etsPct) >= 0.01 ? etsTrend : undefined}
+                      trendValue={hasMeaningfulEu && Math.abs(etsPct) >= 0.01 ? `${Math.abs(etsPct).toFixed(1)}%` : undefined}
                     />
                   </div>
                 </div>
@@ -288,17 +395,10 @@ export default function ScenarioModeler() {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-semibold text-sm mb-2">{t('scenario:delta')}</h3>
                   <p className="text-sm">{t('scenario:ciiRatingChange')}: {delta.cii_rating_change as string}</p>
-                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {hasEuCoverage && hasFuel ? `${formatNumber((delta.fueleu_balance_delta_mj as number) || 0)} MJ` : '—'}</p>
-                  <p className="text-sm">{t('scenario:etsCostDelta')}: {hasEuCoverage && hasFuel ? formatCurrency((delta.eu_ets_cost_delta_eur as number) || 0) : '—'}</p>
+                  <p className="text-sm">{t('scenario:fueleuBalanceDelta')}: {hasMeaningfulEu ? `${formatNumber((delta.fueleu_balance_delta_mj as number) || 0)} MJ` : '—'}</p>
+                  <p className="text-sm">{t('scenario:etsCostDelta')}: {hasMeaningfulEu ? formatCurrency((delta.eu_ets_cost_delta_eur as number) || 0) : '—'}</p>
                 </div>
               )}
-            </div>
-          )}
-          {!loading && !result && (
-            <div className="text-center py-12 text-gray-400">
-              {t('scenario:adjustPrompt')}
-              <br />
-              {t('scenario:requiresVoyageData')}
             </div>
           )}
         </div>

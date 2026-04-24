@@ -65,6 +65,11 @@ class ScenarioRequest(BaseModel):
     fuel_mix: dict[str, float] | None = None
     eua_price: float = 75.0
     projection_years: list[int] | None = None
+    # When either override is provided, a single synthetic intra-EU leg is
+    # used for the calc instead of the stored voyage data — useful when the
+    # voyage log is incomplete and the user wants to enter yearly totals.
+    override_distance_nm: float | None = None
+    override_fuel_tonnes: float | None = None
 
 
 class ScenarioResponse(BaseModel):
