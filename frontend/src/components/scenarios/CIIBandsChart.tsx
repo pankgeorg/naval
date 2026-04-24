@@ -119,7 +119,7 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
               fontSize={11}
               fill="#6b7280"
             >
-              {formatNumber(v)}
+              {formatNumber(v, 3)}
             </text>
           </g>
         ))}
@@ -141,7 +141,7 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
           fontSize={10}
           fill="#374151"
         >
-          required {formatNumber(baseline.required_cii)}
+          required {formatNumber(baseline.required_cii, 3)}
         </text>
 
         {/* Connector between baseline and scenario */}
@@ -170,15 +170,15 @@ export default function CIIBandsChart({ baseline, scenario, year }: Props) {
       <div className="flex items-center gap-4 text-xs text-gray-700 mt-2 flex-wrap">
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-2 h-2 rounded-full bg-gray-900"></span>
-          Baseline {formatNumber(baseline.attained_aer)} ({baseline.rating})
+          Baseline {formatNumber(baseline.attained_aer, 3)} ({baseline.rating})
         </span>
         <span className="flex items-center gap-1.5">
           <span className="font-bold text-gray-900">✕</span>
-          Scenario {formatNumber(scenario.attained_aer)} ({scenario.rating})
+          Scenario {formatNumber(scenario.attained_aer, 3)} ({scenario.rating})
         </span>
         {!unchanged && (
           <span className={`font-medium ${improved ? 'text-green-700' : 'text-red-700'}`}>
-            {improved ? '▼' : '▲'} {formatNumber(Math.abs(delta))} ({improved ? 'improved' : 'worsened'} {Math.abs(deltaPct).toFixed(1)}%)
+            {improved ? '▼' : '▲'} {formatNumber(Math.abs(delta), 3)} ({improved ? 'improved' : 'worsened'} {Math.abs(deltaPct).toFixed(3)}%)
           </span>
         )}
       </div>

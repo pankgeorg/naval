@@ -130,7 +130,7 @@ export default function FuelEUProjectionChart({ projection }: Props) {
           fontSize={10}
           fill="#6b7280"
         >
-          {formatNumber(v)}
+          {formatNumber(v, 3)}
         </text>
       ))}
       <text x={padL - 6} y={padT - 6} textAnchor="end" fontSize={10} fill="#6b7280">gCO₂eq/MJ</text>

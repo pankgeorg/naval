@@ -76,7 +76,7 @@ def calculate_cii(
         breakdown.append(CIIBreakdownItem(
             label=_CORRECTION_LABELS.get(ctype, ctype),
             correction_type=ctype,
-            co2_offset_tonnes=round(offset, 4),
+            co2_offset_tonnes=round(offset, 6),
         ))
         total_offset_tonnes += offset
 
@@ -118,22 +118,22 @@ def calculate_cii(
 
     return CIIResult(
         year=year,
-        attained_aer=round(attained_aer, 4),
-        required_cii=round(required_cii, 4),
-        reference_value=round(ref_value, 4),
+        attained_aer=round(attained_aer, 6),
+        required_cii=round(required_cii, 6),
+        reference_value=round(ref_value, 6),
         reduction_factor_pct=z_pct,
         rating=rating,
         band_boundaries={
-            "A_upper": round(d1 * required_cii, 4),
-            "B_upper": round(d2 * required_cii, 4),
-            "C_upper": round(d3 * required_cii, 4),
-            "D_upper": round(d4 * required_cii, 4),
+            "A_upper": round(d1 * required_cii, 6),
+            "B_upper": round(d2 * required_cii, 6),
+            "C_upper": round(d3 * required_cii, 6),
+            "D_upper": round(d4 * required_cii, 6),
         },
-        total_co2_tonnes=round(corrected_co2_tonnes, 4),
+        total_co2_tonnes=round(corrected_co2_tonnes, 6),
         total_distance_nm=annual_distance_nm,
         capacity=capacity,
         capacity_type=cap_type,
-        uncorrected_co2_tonnes=round(uncorrected_co2_tonnes, 4),
-        uncorrected_attained_aer=round(uncorrected_aer, 4),
+        uncorrected_co2_tonnes=round(uncorrected_co2_tonnes, 6),
+        uncorrected_attained_aer=round(uncorrected_aer, 6),
         corrections=breakdown,
     )

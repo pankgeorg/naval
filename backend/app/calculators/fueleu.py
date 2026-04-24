@@ -103,7 +103,7 @@ def calculate_fueleu(
         year=year,
         target_reduction_pct=reduction_pct,
         target_intensity=target_intensity,
-        weighted_intensity=round(weighted_intensity, 4),
+        weighted_intensity=round(weighted_intensity, 6),
         compliance_balance_mj=round(compliance_balance_mj, 2),
         compliant=compliance_balance_mj >= 0,
         penalty_estimate_eur=round(penalty_eur, 2),

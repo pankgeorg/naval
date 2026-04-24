@@ -23,7 +23,7 @@ export default function SpeedSlider({ value, onChange }: Props) {
       <div className="text-center text-sm font-medium">
         {value > 0 ? '+' : ''}{value}%
         <span className="text-gray-400 text-xs ml-2">
-          (fuel change: {value > 0 ? '+' : ''}{(((1 + value / 100) ** 2 - 1) * 100).toFixed(1)}%)
+          (fuel change: {value > 0 ? '+' : ''}{(((1 + value / 100) ** 2 - 1) * 100).toFixed(3)}%)
         </span>
       </div>
     </div>
