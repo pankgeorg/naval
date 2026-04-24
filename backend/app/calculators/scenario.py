@@ -113,13 +113,17 @@ def run_scenario(
     speed_change_pct: float = 0.0,
     fuel_mix: dict[str, float] | None = None,
     eua_price_eur: float = 75.0,
+    corrections: list[dict] | None = None,
 ) -> ScenarioResult:
     modified_voyages = _modify_voyages(baseline_voyages, speed_change_pct, fuel_mix, fuel_types)
 
     fuel_records = _flatten_fuel_records(modified_voyages)
     distance = _total_distance(modified_voyages)
 
-    cii = calculate_cii(ship_type, dwt, gt, fuel_records, distance, year, fuel_types)
+    cii = calculate_cii(
+        ship_type, dwt, gt, fuel_records, distance, year, fuel_types,
+        corrections=corrections,
+    )
     fueleu = calculate_fueleu(modified_voyages, year, fuel_types)
     ets = calculate_eu_ets(modified_voyages, year, fuel_types, eua_price_eur)
 

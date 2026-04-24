@@ -94,6 +94,7 @@ async def run_what_if(
         speed_change_pct=data.speed_change_pct,
         fuel_mix=data.fuel_mix,
         eua_price_eur=data.eua_price,
+        corrections=data.extra_corrections,
     )
 
     baseline_dict = {
@@ -159,6 +160,7 @@ async def run_what_if(
                 speed_change_pct=data.speed_change_pct,
                 fuel_mix=data.fuel_mix,
                 eua_price_eur=data.eua_price,
+                corrections=data.extra_corrections,
             )
             projection.append({
                 "year": yr,

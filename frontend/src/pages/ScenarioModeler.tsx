@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Info, Loader2, RotateCcw } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronRight, Info, Loader2, RotateCcw } from 'lucide-react';
 import { runScenario } from '../api/calculations';
 import { getShip } from '../api/ships';
 import SpeedSlider from '../components/scenarios/SpeedSlider';
 import FuelMixSlider from '../components/scenarios/FuelMixSlider';
 import ScenarioBandsPanel from '../components/scenarios/ScenarioBandsPanel';
+import ScenarioCorrectionsEditor from '../components/scenarios/ScenarioCorrectionsEditor';
 import MetricCard from '../components/compliance/MetricCard';
 import Breadcrumbs from '../components/shared/Breadcrumbs';
 import NumberField from '../components/shared/NumberField';
+import type { CIICorrectionInput } from '../types/ciiCorrection';
 import { formatNumber, formatCurrency } from '../utils/formatters';
 
 interface ScenarioMeta {
@@ -45,6 +47,9 @@ export default function ScenarioModeler() {
   // Annual totals overrides. `null` means use voyage-derived values.
   const [overrideDistance, setOverrideDistance] = useState<number | null>(null);
   const [overrideFuel, setOverrideFuel] = useState<number | null>(null);
+  // Scenario-only CII corrections (not persisted).
+  const [extraCorrections, setExtraCorrections] = useState<CIICorrectionInput[]>([]);
+  const [correctionsOpen, setCorrectionsOpen] = useState(false);
 
   useEffect(() => {
     if (id) getShip(id).then((s) => setShipName(s.name));
@@ -70,6 +75,12 @@ export default function ScenarioModeler() {
           projection_years: projectionYears,
           override_distance_nm: overrideDistance,
           override_fuel_tonnes: overrideFuel,
+          extra_corrections: extraCorrections.length > 0
+            ? extraCorrections.map((c) => ({
+                correction_type: c.correction_type,
+                co2_offset_tonnes: c.co2_offset_tonnes,
+              }))
+            : null,
         });
         setResult(data);
       } catch (err) {
@@ -79,7 +90,7 @@ export default function ScenarioModeler() {
       }
     }, 300);
     return () => clearTimeout(timer);
-  }, [id, year, speedChange, fuelMix, euaPrice, overrideDistance, overrideFuel]);
+  }, [id, year, speedChange, fuelMix, euaPrice, overrideDistance, overrideFuel, extraCorrections]);
 
   const baseline = result?.baseline as Record<string, Record<string, unknown>> | undefined;
   const scenario = result?.scenario as Record<string, Record<string, unknown>> | undefined;
@@ -320,6 +331,32 @@ export default function ScenarioModeler() {
                   <p className="text-sm text-blue-700">{t('scenario:noEuCoverage')}</p>
                 </div>
               )}
+
+              {/* Scenario-only CII corrections — collapsible, local-only */}
+              <div className="bg-white rounded-lg border border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setCorrectionsOpen((o) => !o)}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  {correctionsOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  {t('compliance:corrections.title')}
+                  {extraCorrections.length > 0 && (
+                    <span className="text-xs bg-maritime-100 text-maritime-700 rounded-full px-2 py-0.5">
+                      {extraCorrections.length}
+                    </span>
+                  )}
+                  <span className="text-xs text-gray-400 ml-2">scenario-only</span>
+                </button>
+                {correctionsOpen && (
+                  <div className="px-4 pb-4">
+                    <ScenarioCorrectionsEditor
+                      corrections={extraCorrections}
+                      onChange={setExtraCorrections}
+                    />
+                  </div>
+                )}
+              </div>
 
               {(baseAer > 0 || scenAer > 0) && (
                 <ScenarioBandsPanel
