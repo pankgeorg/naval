@@ -14,6 +14,12 @@ import type {
   CorrectionType,
 } from '../../types/ciiCorrection';
 import { CORRECTION_UNIT_SUGGESTIONS } from '../../types/ciiCorrection';
+import {
+  RULES_OF_THUMB,
+  ruleOfThumbOffset,
+  isOverridden,
+  nextOffsetOnQuantityChange,
+} from '../../utils/ciiCorrectionRules';
 
 interface Props {
   voyageId: string;
@@ -177,7 +183,14 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                 <td className="py-2 px-2 text-right">
                   <NumberField
                     value={it.quantity ?? null}
-                    onChange={(v) => updateField(it.id, 'quantity', v)}
+                    onChange={(v) => {
+                      const nextOffset = nextOffsetOnQuantityChange(
+                        it.correction_type, it.quantity, it.co2_offset_tonnes, v,
+                      );
+                      setItems(items.map((x) => x.id === it.id
+                        ? { ...x, quantity: v, co2_offset_tonnes: nextOffset }
+                        : x));
+                    }}
                     onBlur={() => commitUpdate(it.id)}
                     step="0.1"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
@@ -201,6 +214,28 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                     step="0.01"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
+                  {(() => {
+                    const rule = RULES_OF_THUMB[it.correction_type];
+                    const expected = ruleOfThumbOffset(it.correction_type, it.quantity);
+                    if (!rule || expected == null) return null;
+                    if (!isOverridden(it.correction_type, it.quantity, it.co2_offset_tonnes)) {
+                      return (
+                        <div className="text-[10px] text-gray-400 mt-0.5" title={rule.note}>
+                          auto ({rule.note})
+                        </div>
+                      );
+                    }
+                    const delta = it.co2_offset_tonnes - expected;
+                    const sign = delta >= 0 ? '+' : '−';
+                    return (
+                      <div
+                        className={`text-[10px] mt-0.5 ${delta >= 0 ? 'text-amber-600' : 'text-blue-600'}`}
+                        title={`Rule of thumb: ${expected.toFixed(2)} t (${rule.note})`}
+                      >
+                        {sign}{Math.abs(delta).toFixed(2)} t vs rule
+                      </div>
+                    );
+                  })()}
                 </td>
                 <td className="py-2 px-2">
                   <input
@@ -265,7 +300,13 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                 <td className="py-2 px-2 text-right">
                   <NumberField
                     value={draft.quantity ?? null}
-                    onChange={(v) => setDraft({ ...draft, quantity: v })}
+                    onChange={(v) => setDraft({
+                      ...draft,
+                      quantity: v,
+                      co2_offset_tonnes: nextOffsetOnQuantityChange(
+                        draft.correction_type, draft.quantity, draft.co2_offset_tonnes, v,
+                      ),
+                    })}
                     step="0.1"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
@@ -285,6 +326,28 @@ export default function CIICorrectionsEditor({ voyageId }: Props) {
                     step="0.01"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
+                  {(() => {
+                    const rule = RULES_OF_THUMB[draft.correction_type];
+                    const expected = ruleOfThumbOffset(draft.correction_type, draft.quantity);
+                    if (!rule || expected == null) return null;
+                    if (!isOverridden(draft.correction_type, draft.quantity, draft.co2_offset_tonnes)) {
+                      return (
+                        <div className="text-[10px] text-gray-400 mt-0.5" title={rule.note}>
+                          auto ({rule.note})
+                        </div>
+                      );
+                    }
+                    const delta = draft.co2_offset_tonnes - expected;
+                    const sign = delta >= 0 ? '+' : '−';
+                    return (
+                      <div
+                        className={`text-[10px] mt-0.5 ${delta >= 0 ? 'text-amber-600' : 'text-blue-600'}`}
+                        title={`Rule of thumb: ${expected.toFixed(2)} t (${rule.note})`}
+                      >
+                        {sign}{Math.abs(delta).toFixed(2)} t vs rule
+                      </div>
+                    );
+                  })()}
                 </td>
                 <td className="py-2 px-2">
                   <input

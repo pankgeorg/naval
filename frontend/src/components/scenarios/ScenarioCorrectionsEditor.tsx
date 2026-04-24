@@ -3,6 +3,12 @@ import { Plus, Trash2 } from 'lucide-react';
 import NumberField from '../shared/NumberField';
 import type { CorrectionType, CIICorrectionInput } from '../../types/ciiCorrection';
 import { CORRECTION_UNIT_SUGGESTIONS } from '../../types/ciiCorrection';
+import {
+  RULES_OF_THUMB,
+  ruleOfThumbOffset,
+  isOverridden,
+  nextOffsetOnQuantityChange,
+} from '../../utils/ciiCorrectionRules';
 
 interface Props {
   corrections: CIICorrectionInput[];
@@ -87,7 +93,12 @@ export default function ScenarioCorrectionsEditor({ corrections, onChange }: Pro
                 <td className="py-2 px-2 text-right">
                   <NumberField
                     value={c.quantity ?? null}
-                    onChange={(v) => update(i, { quantity: v })}
+                    onChange={(v) => update(i, {
+                      quantity: v,
+                      co2_offset_tonnes: nextOffsetOnQuantityChange(
+                        c.correction_type, c.quantity, c.co2_offset_tonnes, v,
+                      ),
+                    })}
                     step="0.1"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
@@ -108,6 +119,28 @@ export default function ScenarioCorrectionsEditor({ corrections, onChange }: Pro
                     step="0.01"
                     className="border border-gray-200 rounded px-1 py-1 text-xs w-20 text-right"
                   />
+                  {(() => {
+                    const rule = RULES_OF_THUMB[c.correction_type];
+                    const expected = ruleOfThumbOffset(c.correction_type, c.quantity);
+                    if (!rule || expected == null) return null;
+                    if (!isOverridden(c.correction_type, c.quantity, c.co2_offset_tonnes)) {
+                      return (
+                        <div className="text-[10px] text-gray-400 mt-0.5" title={rule.note}>
+                          auto ({rule.note})
+                        </div>
+                      );
+                    }
+                    const delta = c.co2_offset_tonnes - expected;
+                    const sign = delta >= 0 ? '+' : '−';
+                    return (
+                      <div
+                        className={`text-[10px] mt-0.5 ${delta >= 0 ? 'text-amber-600' : 'text-blue-600'}`}
+                        title={`Rule of thumb: ${expected.toFixed(2)} t (${rule.note})`}
+                      >
+                        {sign}{Math.abs(delta).toFixed(2)} t vs rule
+                      </div>
+                    );
+                  })()}
                 </td>
                 <td className="py-2 px-2">
                   <input
