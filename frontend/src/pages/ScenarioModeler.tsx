@@ -108,7 +108,34 @@ export default function ScenarioModeler() {
   const baseFueleu = (baseline?.fueleu?.weighted_intensity as number) || 0;
   const scenFueleu = (scenario?.fueleu?.weighted_intensity as number) || 0;
   const fueleuPct = pctChange(baseFueleu, scenFueleu);
-  const fueleuTrend = trendFor(fueleuPct, true);
+  const fueleuIntensityTrend = trendFor(fueleuPct, true);
+
+  // Compliance balance scales with fuel amount; positive = surplus, lower |deficit| is better.
+  const baseFueleuBalance = (baseline?.fueleu?.compliance_balance_mj as number) || 0;
+  const scenFueleuBalance = (scenario?.fueleu?.compliance_balance_mj as number) || 0;
+  const fueleuBalancePct = pctChange(baseFueleuBalance, scenFueleuBalance);
+  // "better" means: balance getting more positive, or less negative (closer to 0)
+  const fueleuBalanceImproved = scenFueleuBalance > baseFueleuBalance
+    ? (baseFueleuBalance < 0 || scenFueleuBalance > baseFueleuBalance) // more positive → better
+    : false;
+  const fueleuBalanceTrend: 'up' | 'down' | 'neutral' =
+    Math.abs(scenFueleuBalance - baseFueleuBalance) < 0.01 ? 'neutral'
+      : fueleuBalanceImproved ? 'down' : 'up';
+  // Prefer intensity delta when it exists (fuel mix changed); otherwise fall back to balance
+  const fueleuTrend = Math.abs(fueleuPct) >= 0.01 ? fueleuIntensityTrend : fueleuBalanceTrend;
+  const fueleuTrendValue = Math.abs(fueleuPct) >= 0.01
+    ? `${Math.abs(fueleuPct).toFixed(1)}%`
+    : Math.abs(fueleuBalancePct) >= 0.01
+      ? `balance ${fueleuBalancePct > 0 ? '+' : ''}${fueleuBalancePct.toFixed(1)}%`
+      : undefined;
+
+  const formatBalance = (mj: number) => {
+    const sign = mj >= 0 ? '+' : '−';
+    const abs = Math.abs(mj);
+    if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(2)} TJ balance`;
+    if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(0)} GJ balance`;
+    return `${sign}${abs.toFixed(0)} MJ balance`;
+  };
 
   const baseEts = (baseline?.eu_ets?.cost_eur as number) || 0;
   const scenEts = (scenario?.eu_ets?.cost_eur as number) || 0;
@@ -191,7 +218,12 @@ export default function ScenarioModeler() {
                       subtitle={baseAer > 0 ? `${formatNumber(baseAer)} gCO₂/t·nm` : undefined}
                       tooltip={t('compliance:scenario.ciiRatingTooltip')}
                     />
-                    <MetricCard title={t('compliance:scenario.fueleuIntensity')} value={fueleuValue(baseline)} subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined} tooltip={t('compliance:scenario.fueleuIntensityTooltip')} />
+                    <MetricCard
+                      title={t('compliance:scenario.fueleuIntensity')}
+                      value={fueleuValue(baseline)}
+                      subtitle={hasEuCoverage && hasFuel ? `gCO₂eq/MJ · ${formatBalance(baseFueleuBalance)}` : undefined}
+                      tooltip={t('compliance:scenario.fueleuIntensityTooltip')}
+                    />
                     <MetricCard title={t('compliance:scenario.etsCost')} value={etsValue(baseline)} tooltip={t('compliance:scenario.etsCostTooltip')} />
                   </div>
                 </div>
@@ -209,10 +241,10 @@ export default function ScenarioModeler() {
                     <MetricCard
                       title={t('compliance:scenario.fueleuIntensity')}
                       value={fueleuValue(scenario)}
-                      subtitle={hasEuCoverage && hasFuel ? 'gCO₂eq/MJ' : undefined}
+                      subtitle={hasEuCoverage && hasFuel ? `gCO₂eq/MJ · ${formatBalance(scenFueleuBalance)}` : undefined}
                       valueColor={hasEuCoverage && hasFuel ? colorFor(fueleuTrend) : undefined}
-                      trend={hasEuCoverage && hasFuel && Math.abs(fueleuPct) >= 0.01 ? fueleuTrend : undefined}
-                      trendValue={hasEuCoverage && hasFuel && Math.abs(fueleuPct) >= 0.01 ? `${Math.abs(fueleuPct).toFixed(1)}%` : undefined}
+                      trend={hasEuCoverage && hasFuel && fueleuTrendValue ? fueleuTrend : undefined}
+                      trendValue={hasEuCoverage && hasFuel ? fueleuTrendValue : undefined}
                     />
                     <MetricCard
                       title={t('compliance:scenario.etsCost')}
