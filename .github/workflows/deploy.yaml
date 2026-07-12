@@ -1,20 +1,43 @@
 name: deploy-naval
+
+# Migrated to k3s (2026-07-12). Instead of `docker compose up` on the host, this
+# builds the arm64 images, pushes them to GHCR, and rolls out the k3s Deployments
+# in the `naval` namespace (manifests live in pankgeorg/infra -> manifests/naval).
+#
+# Requires the repo secret GHCR_TOKEN = a classic PAT (owner pankgeorg) with
+# write:packages — the same one used by pankgeorg/ceres. The k3s Deployments use
+# :latest + imagePullPolicy: Always, so `rollout restart` re-pulls the new image.
+
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: [self-hosted, Linux, ARM64]
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: "Pull, rebuild and redeploy"
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u pankgeorg --password-stdin
+
+      - name: Build and push naval-api + naval-frontend (arm64)
         run: |
-          cd /home/pgeorgakopoulos/naval-deployment/naval
-          git pull
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
-      - name: "Reload nginx"
+          docker build -t ghcr.io/pankgeorg/naval-api:latest \
+                       -t ghcr.io/pankgeorg/naval-api:${{ github.sha }} ./backend
+          docker build -t ghcr.io/pankgeorg/naval-frontend:latest \
+                       -t ghcr.io/pankgeorg/naval-frontend:${{ github.sha }} ./frontend
+          docker push ghcr.io/pankgeorg/naval-api:latest
+          docker push ghcr.io/pankgeorg/naval-api:${{ github.sha }}
+          docker push ghcr.io/pankgeorg/naval-frontend:latest
+          docker push ghcr.io/pankgeorg/naval-frontend:${{ github.sha }}
+
+      - name: Roll out to k3s
         run: |
-          cd /home/pgeorgakopoulos/armada
-          docker compose exec nginx nginx -s reload
+          sudo k3s kubectl -n naval rollout restart deploy/naval-api deploy/naval-frontend
+          sudo k3s kubectl -n naval rollout status deploy/naval-api --timeout=180s
+          sudo k3s kubectl -n naval rollout status deploy/naval-frontend --timeout=180s
